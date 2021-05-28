@@ -1,22 +1,23 @@
-#include <iostream>     // std::cout
-#include <iterator>     // std::reverse_iterator
-#include <vector>       // std::vector
+#include "ft_vector.hpp"
+#include <vector>
+#include <iostream>
+int main()
+{
+  std::vector<int> mass(5, 0);
 
-int main () {
-  std::vector<int> myvector;
-  for (int i=0; i<10; i++) myvector.push_back(i);
-
-  typedef std::vector<int>::iterator iter_type;
-                                                         // ? 9 8 7 6 5 4 3 2 1 0 ?
-  iter_type from (myvector.begin());                     //   ^
-                                                         //         ------>
-  iter_type until (myvector.end());                      //                       ^
-                                                         //
-  std::reverse_iterator<iter_type> rev_until (from);     // ^
-                                                         //         <------
-  std::reverse_iterator<iter_type> rev_from (until);     //                     ^
-
-  std::cout << "myvector:";
-	std::cout << (rev_from < rev_until) << '\n';
-  return 0;
+  mass[0] = 1;
+  mass[2] = 3;
+  mass.insert(mass.begin() + 1, 2);
+  mass.insert(mass.begin() + 1, 2);
+  for (size_t i = 0; i < mass.size(); ++i)
+    std::cout << mass[i] << ' ';
+  std::cout << '\n';
+  ft::vector<int> arr(5, 0);
+  arr[0] = 1;
+  arr[2] = 3;
+  arr.insert(arr.begin() + 1, 2);
+  arr.insert(arr.begin() + 1, 2);
+  for (size_t i = 0; i < arr.size(); ++i)
+    std::cout << arr[i] << ' ';
+  std::cout << '\n';
 }

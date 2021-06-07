@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 15:31:25 by fignigno          #+#    #+#             */
-/*   Updated: 2021/05/22 15:31:57 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/03 20:11:05 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,14 @@ namespace ft
 	struct enable_if <true, T> {
 		typedef T type;
 	};
+
+	template<class T>
+	void swap(T &a, T &b) {
+		T &tmp = a;
+
+		a = b;
+		b = tmp;
+	}
 }
 
 

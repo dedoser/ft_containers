@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 19:02:37 by fignigno          #+#    #+#             */
-/*   Updated: 2021/05/28 18:47:43 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/04 18:20:45 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define FT_VECTOR_RANDOM_ITERATOR_HPP
 
 #include <iterator>
-#include <iostream>
+
 namespace ft
 {
 	template <class T> class VectorRandomAccessIterator : public std::iterator<std::random_access_iterator_tag, T>
@@ -29,7 +29,6 @@ namespace ft
 
 		VectorRandomAccessIterator() : _ptr(0) {}
 		VectorRandomAccessIterator(const VectorRandomAccessIterator &obj) : _ptr(obj._ptr) {}
-		VectorRandomAccessIterator(pointer ptr) : _ptr(ptr) {}
 		virtual ~VectorRandomAccessIterator() {}
 
 		RaIterator	&operator=(const VectorRandomAccessIterator &right) {
@@ -96,6 +95,7 @@ namespace ft
 
 	private:
 		pointer					_ptr;
+		VectorRandomAccessIterator(pointer ptr) : _ptr(ptr) {}
 	};
 
 	template <class T>

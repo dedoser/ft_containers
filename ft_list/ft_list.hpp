@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/07 23:13:09 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/10 21:33:14 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ namespace ft {
 
 		void	push_back(const value_type &val) {
 			put_elem_before(_node, val);
-			_size--;
+			_size++;
 		}
 
 		void	pop_back() {
@@ -289,9 +289,19 @@ namespace ft {
 		}
 
 		void splice (iterator position, list& x, iterator first, iterator last) {
-			while (first != last) {
-				this->splice(position, x, first++);
-			}
+			size_type	dist = std::distance(first, last);
+			Elem		*prev_x_start = first.get_pointer()->prev;
+			Elem		*prev_x_end = last.get_pointer()->prev;
+			Elem		*prev_pos = position.get_pointer()->prev;
+
+			prev_x_start->next = last.get_pointer();
+			last.get_pointer()->prev = prev_x_start;
+			first.get_pointer()->prev = prev_pos;
+			prev_pos->next = first.get_pointer();
+			prev_x_end->next = position.get_pointer();
+			position.get_pointer()->prev = prev_x_end;
+			_size += dist;
+			x._size -= dist;
 		}
 
 		void remove (const value_type& val) {
@@ -309,7 +319,7 @@ namespace ft {
 		}
 
 		template <class Predicate>
-			void remove_if (Predicate pred) {
+		void remove_if (Predicate pred) {
 			iterator	cur_node = this->begin();
 			iterator	next_node;
 
@@ -343,29 +353,114 @@ namespace ft {
 		}
 
 	template <class BinaryPredicate>
-		void unique (BinaryPredicate binary_pred) {
+	void unique (BinaryPredicate binary_pred) {
 		iterator	cur_node = ++this->begin();
-			iterator	next_node;
-			iterator	prev_node = this->begin();
+		iterator	next_node;
+		iterator	prev_node = this->begin();
 
-			while (cur_node != this->end()) {
-				next_node = cur_node;
-				next_node++;
-				if (binary_pred(*cur_node, *prev_node)) {
-					destroy_elem(cur_node.get_pointer());
-					_size--;
-				}
-				else
-					prev_node = cur_node;
-				cur_node = next_node;
+		while (cur_node != this->end()) {
+			next_node = cur_node;
+			next_node++;
+			if (binary_pred(*cur_node, *prev_node)) {
+				destroy_elem(cur_node.get_pointer());
+				_size--;
 			}
+			else
+				prev_node = cur_node;
+			cur_node = next_node;
+		}
 	}
 
 	void	merge(list &x) {
 		if (&x == this)
 			return ;
-		
+		iterator	cur_node = this->begin();
+		iterator	x_cur_node = x.begin();
+
+		while (cur_node != this->end()) {
+			iterator	x_end_node = x_cur_node;
+			while (x_end_node != x.end()
+				&& *x_end_node < *cur_node) {
+				++x_end_node;
+			}
+			if (x_end_node == x_cur_node)
+				cur_node++;
+			else {
+				splice(cur_node, x, x_cur_node, x_end_node);
+				x_cur_node = x_end_node;
+			}
+		}
+		if (x._size != 0)
+			splice(cur_node, x);
 	}
+
+	template <class Compare>
+	void merge (list& x, Compare comp) {
+		if (&x == this)
+			return ;
+		iterator	cur_node = this->begin();
+		iterator	x_cur_node = x.begin();
+
+		while (cur_node != this->end()) {
+			iterator	x_end_node = x_cur_node;
+			while (x_end_node != x.end()
+				&& comp(*x_end_node, *cur_node)) {
+				++x_end_node;
+			}
+			if (x_end_node == x_cur_node)
+				cur_node++;
+			else {
+				splice(cur_node, x, x_cur_node, x_end_node);
+				x_cur_node = x_end_node;
+			}
+		}
+		if (x._size != 0)
+			splice(cur_node, x);
+	}
+
+	void	sort() {
+		iterator	endList = --this->end();
+		for (iterator cur = this->begin(); cur != endList; ++cur) {
+			iterator	next = cur;
+			++next;
+			for (; next != this->end(); ++next) {
+				if (*next < *cur)
+					ft::swap(*next, *cur);
+			}
+		}
+	}
+	
+	template <class Compare>
+	void sort (Compare comp) {
+		iterator	endList = --this->end();
+		for (iterator cur = this->begin(); cur != endList; ++cur) {
+			iterator	next = cur;
+			++next;
+			for (; next != this->end(); ++next) {
+				if (comp(*next, *cur))
+					ft::swap(*next, *cur);
+			}
+		}
+	}
+
+	void	reverse() {
+		Elem	*start = _node->next;
+		Elem	*end = _node->prev;
+
+		for (size_type i = 0; i < _size / 2; ++i) {
+			Elem	*startNext = start->next;
+			Elem	*endPrev = end->prev;
+			swap_node(start, end);
+			start = startNext;
+			end = endPrev;
+			
+		}
+	}
+	
+	allocator_type	get_allocator() const {
+		return (_allocator);
+	}
+	
 	private:
 		Elem					*_node;
 		size_type				_size;
@@ -407,7 +502,87 @@ namespace ft {
 			end_elem->prev->next = new_elem;
 			end_elem->prev = new_elem;
 		}
+
+		bool	elems_are_neighbours(Elem *A, Elem *B) {
+			return ((A->next == B && B->prev == A) ||
+					(A->prev == B && A->next == B));
+		}
+
+		void	swap_node(Elem *lhs, Elem *rhs) {
+			Elem	*outterElems[4];
+
+			outterElems[0] = lhs->prev;
+			outterElems[1] = rhs->prev;
+			outterElems[2] = lhs->next;
+			outterElems[3] = rhs->next;
+			if (elems_are_neighbours(lhs, rhs)) {
+				lhs->next = outterElems[3];
+				lhs->prev = outterElems[2];
+				rhs->next = outterElems[1];
+				rhs->prev = outterElems[0];
+			}
+			else {
+				lhs->next = outterElems[3];
+				rhs->next = outterElems[2];
+				lhs->prev = outterElems[1];
+				rhs->prev = outterElems[0];
+			}
+			lhs->prev->next = lhs;
+			lhs->next->prev = lhs;
+			rhs->prev->next = rhs;
+			rhs->next->prev = rhs;
+		}
 	};
+	template <class T, class Alloc>
+	bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
+		if (lhs.size() != rhs.size())
+			return (false);
+		typename ft::list<T, Alloc>::const_iterator	lit = lhs.begin();
+		typename ft::list<T, Alloc>::const_iterator	rit = rhs.begin();
+		while (lit != lhs.end()) {
+			if (*lit != *rit)
+				return (false);
+			++lit;
+			++rit;
+		}
+		return (true);
+	}
+	
+	template <class T, class Alloc>
+	bool operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
+		return (!(lhs == rhs));
+	}
+
+	template <class T, class Alloc>
+	bool operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
+		typename ft::list<T, Alloc>::const_iterator	lit = lhs.begin();
+		typename ft::list<T, Alloc>::const_iterator	rit = rhs.begin();
+
+		while (lit != lhs.end()
+			&& rit != rhs.end()) {
+			if (*lit < *rit)
+				return (true);
+			++lit;
+			++rit;
+		}
+		return (false);
+	}
+	template <class T, class Alloc>
+	bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
+		return (lhs < rhs || lhs == rhs);
+	}
+	template <class T, class Alloc>
+	bool operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
+		return (!(lhs < rhs));
+	}
+	template <class T, class Alloc>
+	bool operator> (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
+		return (rhs < lhs);
+	}
+	template <class T, class Alloc>
+	void swap (list<T,Alloc>& x, list<T,Alloc>& y) {
+		x.swap(y);
+	}
 }
 
 #endif

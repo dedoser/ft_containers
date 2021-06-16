@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 20:28:59 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/07 22:41:37 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/10 21:25:52 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,22 +50,27 @@ int main1 ()
   return 0;
 }
 
-int main() {
-	int	arr[] = {5, 4, 7, 100, 1, 7, 9000};
-	int	marr[] = {13, 1, 1, 1, 100000, 5, 7};
-	std::list<int>	myList(arr, arr + 7);
-	std::list<int>	mergeList(marr, marr + 7);
+int main10() {
+	int	arr[] = {1, 2, 3, 4, 5, 20};
+	int	marr[] = {1, 2, 3, 7, 1000, 10000};
+	std::list<int>	myList(arr, arr + 6);
+	std::list<int>	mergeList(marr, marr + 6);
+	
 	myList.merge(mergeList);
+	// myList.splice(myList.begin(), mergeList, mergeList.begin(), mergeList.end());
 	 for (auto it = myList.begin(); it != myList.end(); ++it) {
 		std::cout << *it << '\n';
 	}
+	std::cout << myList.size()  << ' ' << mergeList.size() << '\n';
 	// ft::list<int>	cont(3, 2);
 	// ft::list<int>	spl(4, 1);
 	
 	// spl.front() = -1;
-	// cont.splice(cont.begin(), spl, spl.begin(), spl.end());
-	// cont.remove(1);
+	// cont.splice(cont.begin(), spl, spl.begin(), spl.begin());
 	// for (auto it = cont.begin(); it != cont.end(); ++it) {
+	// 	std::cout << *it << '\n';
+	// }
+	// for (auto it = spl.begin(); it != spl.end(); ++it) {
 	// 	std::cout << *it << '\n';
 	// }
 	// std::cout << cont.size()  << ' ' << spl.size() << '\n';
@@ -85,3 +90,85 @@ int main() {
 	// for (auto it = list.begin(); it != list.end(); ++it)
 	// 	std::cout << *it << '\n';
 }
+
+// compare only integral part:
+bool mycomparison (double first, double second)
+{ return ( int(first)<int(second) ); }
+
+int main ()
+{
+  std::list<double> first, second;
+
+  first.push_back (3.1);
+  first.push_back (2.2);
+  first.push_back (2.9);
+
+  second.push_back (3.7);
+  second.push_back (7.1);
+  second.push_back (1.4);
+
+  first.sort();
+  second.sort();
+
+  first.merge(second);
+
+  // (second is now empty)
+
+  second.push_back (2.1);
+
+  first.merge(second,mycomparison);
+
+  std::cout << "first contains:";
+  for (auto it=first.begin(); it!=first.end(); ++it)
+    std::cout << ' ' << *it;
+  std::cout << '\n';
+std::cout << (first == second) << '\n';
+  return 0;
+}
+
+#include <string>
+#include <cctype>
+
+// comparison, not case sensitive.
+bool compare_nocase (const std::string& first, const std::string& second)
+{
+  unsigned int i=0;
+  while ( (i<first.length()) && (i<second.length()) )
+  {
+    if (tolower(first[i])<tolower(second[i])) return true;
+    else if (tolower(first[i])>tolower(second[i])) return false;
+    ++i;
+  }
+  return ( first.length() < second.length() );
+}
+
+int main45 ()
+{
+  ft::list<std::string> mylist;
+  ft::list<std::string>::iterator it;
+  mylist.push_back ("one");
+  mylist.push_back ("two");
+  mylist.push_back ("Three");
+
+  mylist.sort();
+
+  std::cout << "mylist contains:";
+  for (it=mylist.begin(); it!=mylist.end(); ++it)
+    std::cout << ' ' << *it;
+  std::cout << '\n';
+
+  mylist.sort(compare_nocase);
+
+  std::cout << "mylist contains:";
+  for (it=mylist.begin(); it!=mylist.end(); ++it)
+    std::cout << ' ' << *it;
+  std::cout << '\n';
+
+	mylist.reverse();
+	std::cout << "mylist contains:";
+  for (it=mylist.begin(); it!=mylist.end(); ++it)
+    std::cout << ' ' << *it;
+  std::cout << '\n';
+  return 0;
+}
+

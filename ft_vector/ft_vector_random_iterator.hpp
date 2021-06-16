@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 19:02:37 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/04 18:20:45 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/16 14:04:03 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ namespace ft
 		typedef typename std::iterator<std::random_access_iterator_tag, T>::iterator_category	iterator_category;
 
 		VectorRandomAccessIterator() : _ptr(0) {}
+		VectorRandomAccessIterator(pointer ptr) : _ptr(ptr) {}
 		VectorRandomAccessIterator(const VectorRandomAccessIterator &obj) : _ptr(obj._ptr) {}
 		virtual ~VectorRandomAccessIterator() {}
 
@@ -95,7 +96,6 @@ namespace ft
 
 	private:
 		pointer					_ptr;
-		VectorRandomAccessIterator(pointer ptr) : _ptr(ptr) {}
 	};
 
 	template <class T>

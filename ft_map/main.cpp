@@ -5,16 +5,19 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/03 21:25:58 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/16 17:53:27 by fignigno         ###   ########.fr       */
+/*   Created: 2021/06/16 15:43:33 by fignigno          #+#    #+#             */
+/*   Updated: 2021/06/16 19:16:01 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <map>
+#include <string>
 #include <iostream>
-#include "Test.hpp"
-
 int main() {
-	ft::vector<int> m;
-	Test<int> t;
-	t.TestAll();
+	std::map<int, std::string> m;
+	m[0] = "a";
+	m[1] = "f";
+	m[-1] = "q";
+	std::map<int, std::string>::iterator it = m.begin();
+	std::cout << (*it).first << '\n';
 }

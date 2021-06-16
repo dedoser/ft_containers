@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 15:10:07 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/04 17:50:06 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/16 17:38:59 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@
 namespace ft
 {
 	template <class T, class Alloc = std::allocator<T> >
-	class vector
-	{
+	class vector {
 	public:
 		typedef	T											value_type;
 		typedef	Alloc										allocator_type;

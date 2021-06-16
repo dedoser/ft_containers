@@ -1,20 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   TreeBidirectIterator.hpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/03 21:25:58 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/16 17:53:27 by fignigno         ###   ########.fr       */
+/*   Created: 2021/06/16 19:32:07 by fignigno          #+#    #+#             */
+/*   Updated: 2021/06/16 19:33:33 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include "Test.hpp"
+#ifndef TREE_BIDIRECTITERATOR_HPP
+#define TREE_BIDIRECTITERATOR_HPP
 
-int main() {
-	ft::vector<int> m;
-	Test<int> t;
-	t.TestAll();
+namespace ft {
+	template <class T> class TreeBidirectIterator
+	{
+	private:
+		/* data */
+	public:
+		TreeBidirectIterator(/* args */);
+		~TreeBidirectIterator();
+	};
 }
+
+#endif

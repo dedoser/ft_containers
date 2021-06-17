@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/17 18:36:11 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/18 00:11:04 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define FT_MAP_ITERATOR_HPP
 
 #include <iterator>
+#include "../ft_tree.hpp"
 
 namespace ft {
 	template <class T, class Node>
@@ -49,7 +50,7 @@ namespace ft {
 		BiIterator	operator++() {
 			if (_ptr->right == NULL)
 				if (_ptr->parent == NULL || _ptr->parent->value < _ptr->value)
-					_ptr++
+					_ptr++;
 				else
 					_ptr = _ptr->parent;
 			else {

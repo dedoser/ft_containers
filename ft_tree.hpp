@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/17 21:50:16 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/18 00:02:07 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,9 @@ namespace ft {
 		return (g->left);
 	}
 
-	void	rotate_left(Node *n) {
-		Node	*pivot = n->right;
+	template <class value_type>
+	void	rotate_left(Node<value_type> *n) {
+		Node<value_type>	*pivot = n->right;
 
 		pivot->parent = n->parent;
 		if (n->parent != NULL) {
@@ -60,8 +61,9 @@ namespace ft {
 		pivot->left = n;
 	}
 
-	void	rotate_right(Node *n) {
-		Node	*pivot = n->left;
+	template <class value_type>
+	void	rotate_right(Node<value_type> *n) {
+		Node<value_type>	*pivot = n->left;
 
 		pivot->parent = n->parent;
 		if (n->parent != NULL) {
@@ -77,22 +79,25 @@ namespace ft {
 		pivot->right = n;
 	}
 
-	void	insert_case1(Node *n) {
+	template <class value_type>
+	void	insert_case1(Node<value_type> *n) {
 		if (n->parent == NULL)
 			n->color = BLACK;
 		else
 			insert_case2(n);
 	}
 
-	void	insert_case2(Node *n) {
+	template <class value_type>
+	void	insert_case2(Node<value_type> *n) {
 		if (n->parent->color == BLACK)
 			return; /* Tree is still valid */
 		else
 			insert_case3(n);
 	}
 
-	void	insert_case3(Node *n) {
-		Node *u = uncle(n), *g;
+	template <class value_type>
+	void	insert_case3(Node<value_type> *n) {
+		Node<value_type> *u = uncle(n), *g;
 
 		if ((u != NULL) && (u->color == RED)) {
 			n->parent->color = BLACK;
@@ -105,8 +110,9 @@ namespace ft {
 		}
 	}
 
-	void	insert_case4(Node *n) {
-		Node *g = grandparent(n);
+	template <class value_type>
+	void	insert_case4(Node<value_type> *n) {
+		Node<value_type> *g = grandparent(n);
 
 		if ((n == n->parent->right) && (n->parent == g->left)) {
 			rotate_left(n->parent);
@@ -118,8 +124,9 @@ namespace ft {
 		insert_case5(n);
 	}
 
-	void	insert_case5(Node *n) {
-		Node *g = grandparent(n);
+	template <class value_type>
+	void	insert_case5(Node<value_type> *n) {
+		Node<value_type> *g = grandparent(n);
 
 		n->parent->color = BLACK;
 		g->color = RED;
@@ -130,7 +137,8 @@ namespace ft {
 		}
 	}
 
-	void 	replace_node(Node* n, Node* child) {
+	template <class value_type>
+	void 	replace_node(Node<value_type> *n, Node<value_type> *child) {
 		child->parent = n->parent;
 		if (n == n->parent->left) {
 			n->parent->left = child;
@@ -139,8 +147,9 @@ namespace ft {
 		}
 	}
 
-	void	delete_one_child(Node *n) {
-		Node *child = n->right == NULL ? n->left : n->right;
+	template <class value_type>
+	void	delete_one_child(Node<value_type> *n) {
+		Node<value_type> *child = n->right == NULL ? n->left : n->right;
 
 		replace_node(n, child);
 		if (n->color == BLACK) {
@@ -152,13 +161,15 @@ namespace ft {
 		delete_node(n);
 	}
 
-	void	delete_case1(Node *n) {
+	template <class value_type>
+	void	delete_case1(Node<value_type> *n) {
 		if (n->parent != NULL)
 			delete_case2(n);
 	}
 
-	void delete_case2(Node *n) {
-		Node *s = sibling(n);
+	template <class value_type>
+	void delete_case2(Node<value_type> *n) {
+		Node<value_type> *s = sibling(n);
 
 		if (s->color == RED) {
 			n->parent->color = RED;
@@ -171,8 +182,9 @@ namespace ft {
 		delete_case3(n);
 	}
 
-	void delete_case3(Node *n) {
-		Node *s = sibling(n);
+	template <class value_type>
+	void delete_case3(Node<value_type> *n) {
+		Node<value_type> *s = sibling(n);
 
 		if ((n->parent->color == BLACK) &&
 			(s->color == BLACK) &&
@@ -184,8 +196,9 @@ namespace ft {
 			delete_case4(n);
 	}
 
-	void delete_case4(Node *n) {
-		Node *s = sibling(n);
+	template <class value_type>
+	void delete_case4(Node<value_type> *n) {
+		Node<value_type> *s = sibling(n);
 
 		if ((n->parent->color == RED) &&
 			(s->color == BLACK) &&
@@ -197,8 +210,9 @@ namespace ft {
 			delete_case5(n);
 	}
 
-	void delete_case5(Node *n) {
-		Node *s = sibling(n);
+	template <class value_type>
+	void delete_case5(Node<value_type> *n) {
+		Node<value_type> *s = sibling(n);
 
 		if (s->color == BLACK) {
 			if ((n == n->parent->left) &&
@@ -218,8 +232,9 @@ namespace ft {
 		delete_case6(n);
 	}
 
-	void delete_case6(Node *n) {
-		Node *s = sibling(n);
+	template <class value_type>
+	void delete_case6(Node<value_type> *n) {
+		Node<value_type> *s = sibling(n);
 
 		s->color = n->parent->color;
 		n->parent->color = BLACK;

@@ -6,14 +6,14 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/10 21:33:14 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/17 19:49:37 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_LIST_HPP
 #define FT_LIST_HPP
 
-#include "ft_list_bidirectioanl_iterator.hpp"
+#include "ft_list_bidirectional_iterator.hpp"
 #include <memory>
 #include "../ft_ReverseIterator.hpp"
 #include "../ft_utils.hpp"
@@ -115,20 +115,26 @@ namespace ft {
 
 		reverse_iterator	rbegin() {
 			if (_size == 0)
-				return (reverse_iterator(_node));
-			return (reverse_iterator(--_node));
+				return (reverse_iterator(this->end()));
+			return (reverse_iterator(--this->end()));
 		}
 
 		const_reverse_iterator	rbegin() const {
-			return (const_reverse_iterator(--_node));
+			if (_size == 0)
+				return (const_reverse_iterator(this->end()));
+			return (const_reverse_iterator(--this->end()));
 		}
 
 		reverse_iterator	rend() {
-			return (reverse_iterator(_node));
+			if (_size == 0)
+				return (reverse_iterator(this->begin()));
+			return (reverse_iterator(--this->begin()));
 		}
 
 		const_reverse_iterator	rend() const {
-			return (const_reverse_iterator(_node));
+			if (_size == 0)
+				return (const_reverse_iterator(this->begin()));
+			return (const_reverse_iterator(--this->begin()));
 		}
 
 		bool	empty() const {

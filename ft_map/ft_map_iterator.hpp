@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/18 00:11:04 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/18 20:37:05 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,18 @@ namespace ft {
 	private:
 		Node	*_ptr;
 	};
+
+	template <class T, class Node>
+	bool	operator==(const MapBidirectIterator<T, Node> &lhs,
+					   const MapBidirectIterator<T, Node> &rhs) {
+		return (lhs.get_pointer() == rhs.get_pointer());
+	}
+
+	template <class T, class Node>
+	bool	operator!=(const MapBidirectIterator<T, Node> &lhs,
+					   const MapBidirectIterator<T, Node> &rhs) {
+		return (lhs.get_pointer() != rhs.get_pointer());
+	}
 }
 
 #endif

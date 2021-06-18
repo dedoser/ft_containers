@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/18 01:06:34 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/18 20:57:34 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,11 @@ namespace ft {
 			friend class map;
 		protected:
 			key_compare comp;
-			value_compare(key_compare c);
+			value_compare(key_compare c) : comp(c) {}
 		public:
+			typedef	bool		result_type;
+			typedef	value_type	first_argument_type;
+			typedef	value_type	second_argument_type;
 			bool operator()(const value_type& x, const value_type& y) const {
 				return (comp(x.first, y.first));
 			}
@@ -58,7 +61,24 @@ namespace ft {
 
 		explicit map (const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) :
-		_root(0), _end_node(0), _beg_node(0), _size(0), _allocator(alloc), _comp(comp) {}
+		_root(NULL), _end_node(0), _beg_node(0), _size(0), _allocator(alloc), _comp(comp) {}
+
+		template <class InputIterator>
+		map (InputIterator first, InputIterator last,
+			const key_compare& comp = key_compare(),
+			const allocator_type& alloc = allocator_type()) {
+			this->insert(first, last);
+		}
+
+		map(const map &x) :
+		_size(x._size), _allocator(x._allocator), _comp(x._comp) {
+			_root = copy_tree(x._root);
+			this->init_border_nodes();
+		}
+
+		~map() {
+			// print_tree(_root);
+		}
 
 		iterator	begin() {
 			return (iterator(_beg_node));
@@ -69,23 +89,23 @@ namespace ft {
 		}
 
 		iterator		end() {
-			return (iterator(_end_node));
+			return (iterator(_end_node + 1));
 		}
 
 		const_iterator	end() const {
-			return (const_iterator(_end_node));
+			return (const_iterator(_end_node + 1));
 		}
 
 		reverse_iterator	rbegin() {
 			if (_end_node == NULL)
 				return (reverse_iterator(_end_node));
-			return (reverse_iterator(--this->end()));
+			return (reverse_iterator(_end_node));
 		}
 
 		const_reverse_iterator	rbegin() const {
 			if (_end_node == NULL)
 				return (const_reverse_iterator(_end_node));
-			return (const_reverse_iterator(--this->end()));
+			return (const_reverse_iterator(_end_node));
 		}
 
 		reverse_iterator	rend() {
@@ -112,6 +132,11 @@ namespace ft {
 			return (_node_allocator.max_size());
 		}
 
+		mapped_type	&operator[](const key_type &k) {
+			return (
+				(*((this->insert(std::make_pair(k, mapped_type()))).first)).second
+			);
+		}
 		std::pair<iterator, bool>	insert(const value_type &val) {
 			if (_size == 0) {
 				_root = create_node(val);
@@ -119,20 +144,36 @@ namespace ft {
 				balance_tree(_root);
 				return (std::make_pair<iterator, bool>(iterator(_root), true));
 			}
+			std::pair<node *, node *>	is_in_map = find(val.first);
+			if (is_in_map.first != NULL)
+				return (std::make_pair<iterator, bool>(
+						iterator(is_in_map.first), true));
 			node	*new_node = create_node(val);
-			node	*tmp = _root;
-			while (true) {
-				node	*next;
-				if (value_compare(new_node->value, tmp->value))
-					next = tmp->left;
-				else
-					next = tmp->right;
-				if (next == NULL)
-					break ;
-				tmp = next;
-			}
-			new_node->parent = tmp;
+			node	*prev = is_in_map.second;
+			new_node->parent = prev;
+			init_leaf(prev, new_node);
 			balance_tree(new_node);
+			_root = find_root(prev);
+			init_border_nodes();
+			_size++;
+			return (std::make_pair<iterator, bool>(iterator(new_node), true));
+		}
+
+		iterator insert (iterator position, const value_type& val) {
+			(void) (position);
+			return (this->insert(val).first);
+		}
+
+		template <class InputIterator>
+		void insert (InputIterator first, InputIterator last) {
+			while (first != last) {
+				this->insert(*first);
+				first++;
+			}
+		}
+
+		value_compare	value_comp() const {
+			return (value_compare(key_compare()));
 		}
 	private:
 		node					*_root;
@@ -165,11 +206,70 @@ namespace ft {
 			_end_node = _root;
 			while (_beg_node->left)
 				_beg_node = _beg_node->left;
-			while (_end_node->left)
-				_end_node = _end_node->left;
+			while (_end_node->right)
+				_end_node = _end_node->right;
 		}
+
 		void	balance_tree(node *n) {
 			insert_case1(n);
+			init_border_nodes();
+		}
+
+		void	init_leaf(node *n, node *new_elem) {
+			if (value_comp()(n->value, new_elem->value))
+				n->right = new_elem;
+			else
+				n->left = new_elem;
+		}
+
+		std::pair<node *, node *>	find(const key_type &key) {
+			node	*tmp = _root;
+			node	*prev;
+
+			while (tmp) {
+				prev = tmp;
+				if (_comp(tmp->value.first, key))
+					tmp = tmp->right;
+				else if (_comp(key, tmp->value.first))
+					tmp = tmp->left;
+				else
+					return (std::make_pair(tmp, tmp));
+			}
+			return (std::make_pair(tmp, prev));
+		}
+
+		node	*copy_node(node *n) {
+			node	*new_elem = create_node(n->value);
+
+			new_elem->color = n->color;
+			return (new_elem);
+		} 
+		node	*copy_tree(node *root) {
+			if (root == NULL)
+				return (NULL);
+			node	*res;
+
+			res = copy_node(root);
+			res->left = copy_tree(root->left);
+			if (res->left)
+				res->left->parent = res;
+			res->right = copy_tree(root->right);
+			if (res->right)
+				res->right->parent = res;
+			return (res);
+		}
+		void	print_tree(node *n) {
+			if (n == NULL)
+				return ;
+			print_tree(n->left);
+			std::cout << n->value.first << ' ' << n->value.second << '\n';
+			print_tree(n->right);
+		}
+
+		node	*find_root(node *n) {
+			while (n->parent != NULL)
+				n = n->parent;
+			return (n);
 		}
 	};
 }

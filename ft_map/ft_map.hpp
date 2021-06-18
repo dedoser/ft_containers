@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/18 20:57:34 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 00:14:03 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,14 @@ namespace ft {
 			}
 		}
 
+		void	erase(iterator position) {
+			replace_node_for_erase(position.get_pointer());
+			node	*del_elem = delete_one_child(position.get_pointer());
+			_root = find_root(del_elem);
+			delete_node(del_elem);
+			init_border_nodes();
+		}
+
 		value_compare	value_comp() const {
 			return (value_compare(key_compare()));
 		}
@@ -197,8 +205,14 @@ namespace ft {
 		}
 
 		void	delete_node(node *n) {
+			if (n->parent != NULL) {
+				if (n->parent->left == n)
+					n->parent->left = NULL;
+				else
+					n->parent->right = NULL;
+			}
 			_allocator.destroy(&n->value);
-			_node_allocator.deallocate(n);
+			_node_allocator.deallocate(n, 1);
 		}
 
 		void	init_border_nodes() {
@@ -243,7 +257,8 @@ namespace ft {
 
 			new_elem->color = n->color;
 			return (new_elem);
-		} 
+		}
+
 		node	*copy_tree(node *root) {
 			if (root == NULL)
 				return (NULL);
@@ -258,18 +273,20 @@ namespace ft {
 				res->right->parent = res;
 			return (res);
 		}
-		void	print_tree(node *n) {
-			if (n == NULL)
-				return ;
-			print_tree(n->left);
-			std::cout << n->value.first << ' ' << n->value.second << '\n';
-			print_tree(n->right);
+
+		void	swap_pair(node *lhs, node *rhs) {
+			value_type	tmpl(lhs->value);
+			value_type	tmpr(rhs->value);
+
+			_allocator.destroy(&lhs->value);
+			_allocator.destroy(&rhs->value);
+			_allocator.construct(&rhs->value, tmpl);
+			_allocator.construct(&lhs->value, tmpr);
 		}
 
-		node	*find_root(node *n) {
-			while (n->parent != NULL)
-				n = n->parent;
-			return (n);
+		void	replace_node_for_erase(node *n) {
+			node	*rep = find_max_for_delete(n);
+			swap_pair(n, rep);
 		}
 	};
 }

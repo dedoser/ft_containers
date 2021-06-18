@@ -6,12 +6,14 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/18 00:02:07 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 00:17:21 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_TREE_HPP
 #define FT_TREE_HPP
+
+#include "ft_utils.hpp"
 
 namespace ft {
 	typedef enum { BLACK, RED } nodeColor;
@@ -138,19 +140,31 @@ namespace ft {
 	}
 
 	template <class value_type>
+	Node<value_type>	*sibling(Node<value_type> *n) {
+		if (n == n->parent->left)
+			return n->parent->right;
+		else
+			return n->parent->left;
+	}
+
+	template <class value_type>
 	void 	replace_node(Node<value_type> *n, Node<value_type> *child) {
 		child->parent = n->parent;
-		if (n == n->parent->left) {
-			n->parent->left = child;
-		} else {
-			n->parent->right = child;
+		if (n->parent != NULL) {
+			if (n == n->parent->left) {
+				n->parent->left = child;
+			} else {
+				n->parent->right = child;
+			}
 		}
 	}
 
 	template <class value_type>
-	void	delete_one_child(Node<value_type> *n) {
+	Node<value_type>	*delete_one_child(Node<value_type> *n) {
 		Node<value_type> *child = n->right == NULL ? n->left : n->right;
 
+		if (child == NULL)
+			return (n);
 		replace_node(n, child);
 		if (n->color == BLACK) {
 			if (child->color == RED)
@@ -158,7 +172,7 @@ namespace ft {
 			else
 				delete_case1(child);
 		}
-		delete_node(n);
+		return (n);
 	}
 
 	template <class value_type>
@@ -246,6 +260,23 @@ namespace ft {
 			s->left->color = BLACK;
 			rotate_right(n->parent);
 		}
+	}
+
+	template<class value_type>
+	Node<value_type>	*find_root(Node<value_type> *n) {
+		while (n->parent != NULL)
+			n = n->parent;
+		return (n);
+	}
+
+	template <class value_type>
+	Node<value_type>	*find_max_for_delete(Node<value_type> *n) {
+		if (n->left == NULL || n->right == NULL)
+			return (n);
+		n = n->left;
+		while (n->right)
+			n = n->right;
+		return (n);
 	}
 }
 

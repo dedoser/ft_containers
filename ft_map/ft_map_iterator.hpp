@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/18 20:37:05 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 14:16:39 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,10 @@ namespace ft {
 
 		BiIterator	operator++() {
 			if (_ptr->right == NULL)
-				if (_ptr->parent == NULL || _ptr->parent->value < _ptr->value)
-					_ptr++;
+				if (_ptr->parent == NULL || _ptr->parent->right == _ptr)
+				{
+					_ptr += sizeof(value_type);
+				}
 				else
 					_ptr = _ptr->parent;
 			else {
@@ -69,7 +71,7 @@ namespace ft {
 
 		BiIterator	operator--() {
 			if (_ptr->left == NULL)
-				if (_ptr->parent == NULL || _ptr->parent->value > _ptr->value)
+				if (_ptr->parent == NULL || _ptr->parent->left == _ptr)
 					_ptr--;
 				else
 					_ptr = _ptr->parent;
@@ -103,6 +105,7 @@ namespace ft {
 	template <class T, class Node>
 	bool	operator!=(const MapBidirectIterator<T, Node> &lhs,
 					   const MapBidirectIterator<T, Node> &rhs) {
+		// std::cout << lhs.get_pointer() << ' ' << rhs.get_pointer() << '\n';
 		return (lhs.get_pointer() != rhs.get_pointer());
 	}
 }

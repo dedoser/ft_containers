@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:33 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 00:43:36 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 14:22:12 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,18 @@ int main() {
 	// // m.insert(it, std::pair<int, std::string>(1, "asd"));
 	// std::cout << (it == m.rend()) << '\n';
 	ft::map<int, std::string>	tmp;
+	tmp[10] = "er";
 	tmp[1] = "a";
 	tmp[2] = "s";
 	tmp[3] = "q";
 	tmp[3] = "w";
-	tmp[4] = "er";
+	tmp[-1] = "qwe";
+	tmp[111] = "erere";
 	// tmp[3] = "q";
 	// std::cout << (++tmp.begin())->first << ' ' << (++tmp.begin())->second << '\n';
+	// std::cout << (++tmp.begin())->first << '\n';
 	for (auto it = tmp.begin(); it != tmp.end(); it++) {
-		std::cout << it->first << " " << it->second << '\n';
+		std::cout << it->first << ' ' << it->second << '\n';
 	}
 	// tmp.erase(tmp.begin());
 	// tmp.erase(++tmp.begin());

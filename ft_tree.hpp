@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 00:17:21 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 13:55:55 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,116 +28,105 @@ namespace ft {
 	};
 
 	template <class value_type>
-	Node<value_type>	*grandparent(Node<value_type> *node) {
-		if ((node != NULL) && (node->parent != NULL))
-			return (node->parent->parent);
-		return (NULL);
-	}
+	void	rotateLeft(Node<value_type> *x, Node<value_type> **root) {
+		Node<value_type> *y = x->right;
 
-	template<class value_type>
-	Node<value_type>	*uncle(Node<value_type> *node) {
-		Node<value_type>	*g = grandparent(node);
-
-		if (g == NULL)
-			return (NULL);
-		if (node->parent == g->left)
-			return (g->right);
-		return (g->left);
-	}
-
-	template <class value_type>
-	void	rotate_left(Node<value_type> *n) {
-		Node<value_type>	*pivot = n->right;
-
-		pivot->parent = n->parent;
-		if (n->parent != NULL) {
-			if (n->parent->left == n)
-				n->parent->left = pivot;
+		x->right = y->left;
+		if (y->left != NULL) y->left->parent = x;
+		if (y != NULL) y->parent = x->parent;
+		if (x->parent) {
+			if (x == x->parent->left)
+				x->parent->left = y;
 			else
-				n->parent->right = pivot;
+				x->parent->right = y;
+		} else {
+			*root = y;
 		}
-		n->right = pivot->left;
-		if (pivot->left != NULL)
-			pivot->left->parent = n;
-		n->parent = pivot;
-		pivot->left = n;
+		y->left = x;
+		if (x != NULL) x->parent = y;
 	}
 
 	template <class value_type>
-	void	rotate_right(Node<value_type> *n) {
-		Node<value_type>	*pivot = n->left;
+	void rotateRight(Node<value_type> *x, Node<value_type> **root) {
+		Node<value_type> *y = x->left;
 
-		pivot->parent = n->parent;
-		if (n->parent != NULL) {
-			if (n->parent->left == n)
-				n->parent->left = pivot;
+		x->left = y->right;
+		if (y->right != NULL)
+			y->right->parent = x;
+		if (y != NULL)
+			y->parent = x->parent;
+		if (x->parent) {
+			if (x == x->parent->right)
+				x->parent->right = y;
 			else
-				n->parent->right = pivot;
-		}
-		n->left = pivot->right;
-		if (pivot->right != NULL)
-			pivot->right->parent = n;
-		n->parent = pivot;
-		pivot->right = n;
-	}
-
-	template <class value_type>
-	void	insert_case1(Node<value_type> *n) {
-		if (n->parent == NULL)
-			n->color = BLACK;
-		else
-			insert_case2(n);
-	}
-
-	template <class value_type>
-	void	insert_case2(Node<value_type> *n) {
-		if (n->parent->color == BLACK)
-			return; /* Tree is still valid */
-		else
-			insert_case3(n);
-	}
-
-	template <class value_type>
-	void	insert_case3(Node<value_type> *n) {
-		Node<value_type> *u = uncle(n), *g;
-
-		if ((u != NULL) && (u->color == RED)) {
-			n->parent->color = BLACK;
-			u->color = BLACK;
-			g = grandparent(n);
-			g->color = RED;
-			insert_case1(g);
+				x->parent->left = y;
 		} else {
-			insert_case4(n);
+			*root = y;
 		}
+		y->right = x;
+		if (x != NULL)
+			x->parent = y;
 	}
 
 	template <class value_type>
-	void	insert_case4(Node<value_type> *n) {
-		Node<value_type> *g = grandparent(n);
+	void insertFixup(Node<value_type> *x, Node<value_type> **root) {
 
-		if ((n == n->parent->right) && (n->parent == g->left)) {
-			rotate_left(n->parent);
-			n = n->left;
-		} else if ((n == n->parent->left) && (n->parent == g->right)) {
-			rotate_right(n->parent);
-			n = n->right;
-		}
-		insert_case5(n);
-	}
+   /*************************************
+    *  maintain Red-Black tree balance  *
+    *  after inserting node x           *
+    *************************************/
 
-	template <class value_type>
-	void	insert_case5(Node<value_type> *n) {
-		Node<value_type> *g = grandparent(n);
+    /* check Red-Black properties */
+	while (x != *root && x->parent->color == RED) {
+		/* we have a violation */
+		if (x->parent == x->parent->parent->left) {
+			Node<value_type> *y = x->parent->parent->right;
+			if (y != NULL && y->color == RED) {
+				/* uncle is RED */
+				x->parent->color = BLACK;
+				y->color = BLACK;
+				x->parent->parent->color = RED;
+				x = x->parent->parent;
+			} else {
 
-		n->parent->color = BLACK;
-		g->color = RED;
-		if ((n == n->parent->left) && (n->parent == g->left)) {
-			rotate_right(g);
+				/* uncle is BLACK */
+				if (x == x->parent->right) {
+					/* make x a left child */
+					x = x->parent;
+					rotateLeft(x, root);
+				}
+
+				/* recolor and rotate */
+				x->parent->color = BLACK;
+				x->parent->parent->color = RED;
+				rotateRight(x->parent->parent, root);
+			}
 		} else {
-			rotate_left(g);
+
+			/* mirror image of above code */
+			Node<value_type> *y = x->parent->parent->left;
+			if (y != NULL && y->color == RED) {
+
+				/* uncle is RED */
+				x->parent->color = BLACK;
+				y->color = BLACK;
+				x->parent->parent->color = RED;
+				x = x->parent->parent;
+			} else {
+
+				/* uncle is BLACK */
+				if (x == x->parent->left) {
+					x = x->parent;
+					rotateRight(x, root);
+				}
+				x->parent->color = BLACK;
+				x->parent->parent->color = RED;
+				rotateLeft(x->parent->parent, root);
+			}
 		}
 	}
+	(*root)->color = BLACK;
+}
 
 	template <class value_type>
 	Node<value_type>	*sibling(Node<value_type> *n) {
@@ -150,12 +139,12 @@ namespace ft {
 	template <class value_type>
 	void 	replace_node(Node<value_type> *n, Node<value_type> *child) {
 		child->parent = n->parent;
-		if (n->parent != NULL) {
+		// if (n->parent != NULL) {
 			if (n == n->parent->left) {
 				n->parent->left = child;
 			} else {
 				n->parent->right = child;
-			}
+			// }
 		}
 	}
 

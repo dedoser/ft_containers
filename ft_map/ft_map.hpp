@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 00:14:03 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 14:15:10 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ namespace ft {
 		template <class InputIterator>
 		map (InputIterator first, InputIterator last,
 			const key_compare& comp = key_compare(),
-			const allocator_type& alloc = allocator_type()) {
+			const allocator_type& alloc = allocator_type()) :
+			_comp(comp), _allocator(alloc) {
 			this->insert(first, last);
 		}
 
@@ -81,6 +82,7 @@ namespace ft {
 		}
 
 		iterator	begin() {
+			// std::cout << _beg_node << '\n';
 			return (iterator(_beg_node));
 		}
 
@@ -89,35 +91,36 @@ namespace ft {
 		}
 
 		iterator		end() {
-			return (iterator(_end_node + 1));
+			// std::cout << _end_node << '\n';
+			return (++iterator(_end_node));
 		}
 
 		const_iterator	end() const {
-			return (const_iterator(_end_node + 1));
+			return (++const_iterator(_end_node));
 		}
 
 		reverse_iterator	rbegin() {
 			if (_end_node == NULL)
 				return (reverse_iterator(_end_node));
-			return (reverse_iterator(_end_node));
+			return (reverse_iterator(--this->end()));
 		}
 
 		const_reverse_iterator	rbegin() const {
 			if (_end_node == NULL)
 				return (const_reverse_iterator(_end_node));
-			return (const_reverse_iterator(_end_node));
+			return (const_reverse_iterator(--this->end()));
 		}
 
 		reverse_iterator	rend() {
 			if (_beg_node == NULL)
 				return (reverse_iterator(this->begin()));
-			return (reverse_iterator(--this->begin()));
+			return (reverse_iterator(++this->begin()));
 		}
 
 		const_reverse_iterator	rend() const {
 			if (_beg_node == NULL)
 				return (const_reverse_iterator(this->begin()));
-			return (const_reverse_iterator(--this->begin()));
+			return (const_reverse_iterator(++this->begin()));
 		}
 
 		bool	empty() const {
@@ -138,25 +141,21 @@ namespace ft {
 			);
 		}
 		std::pair<iterator, bool>	insert(const value_type &val) {
-			if (_size == 0) {
-				_root = create_node(val);
-				_size++;
-				balance_tree(_root);
-				return (std::make_pair<iterator, bool>(iterator(_root), true));
-			}
+			node	*parent, *x;
+
 			std::pair<node *, node *>	is_in_map = find(val.first);
 			if (is_in_map.first != NULL)
-				return (std::make_pair<iterator, bool>(
-						iterator(is_in_map.first), true));
-			node	*new_node = create_node(val);
-			node	*prev = is_in_map.second;
-			new_node->parent = prev;
-			init_leaf(prev, new_node);
-			balance_tree(new_node);
-			_root = find_root(prev);
-			init_border_nodes();
+				return (std::make_pair<iterator, bool>(is_in_map.first, false));
+			x = create_node(val);
+			parent = is_in_map.second;
+			x->parent = parent;
+			if (parent)
+				init_leaf(parent, x);
+			else
+				_root = x;
+			balance_tree(x);
 			_size++;
-			return (std::make_pair<iterator, bool>(iterator(new_node), true));
+			return (std::pair<iterator, bool>(x, true));
 		}
 
 		iterator insert (iterator position, const value_type& val) {
@@ -222,14 +221,17 @@ namespace ft {
 				_beg_node = _beg_node->left;
 			while (_end_node->right)
 				_end_node = _end_node->right;
+			// std::cout << _beg_node->value.first << ' ' << _end_node->value.first << '\n';
 		}
 
 		void	balance_tree(node *n) {
-			insert_case1(n);
+			insertFixup(n, &_root);
 			init_border_nodes();
 		}
 
 		void	init_leaf(node *n, node *new_elem) {
+			if (n == NULL)
+				return ;
 			if (value_comp()(n->value, new_elem->value))
 				n->right = new_elem;
 			else
@@ -238,7 +240,7 @@ namespace ft {
 
 		std::pair<node *, node *>	find(const key_type &key) {
 			node	*tmp = _root;
-			node	*prev;
+			node	*prev = NULL;
 
 			while (tmp) {
 				prev = tmp;

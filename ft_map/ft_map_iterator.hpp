@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 14:16:39 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/19 21:04:29 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,26 @@ namespace ft {
 		}
 
 		BiIterator	operator++() {
-			if (_ptr->right == NULL)
-				if (_ptr->parent == NULL || _ptr->parent->right == _ptr)
-				{
-					_ptr += sizeof(value_type);
-				}
-				else
-					_ptr = _ptr->parent;
-			else {
+			if (isNULL(_ptr))
+				return (NULL);
+			if (!isNULL(_ptr->right)) {
 				_ptr = _ptr->right;
-				while (_ptr->left != NULL)
+				while (!isNULL(_ptr->left))
 					_ptr = _ptr->left;
+			}
+			else {
+				Node	*prev = _ptr;
+				while (!isNULL(_ptr->parent)) {
+					prev = _ptr;
+					_ptr = _ptr->parent;
+					if (_ptr->left == prev)
+						break ;
+				}
+				if (isNULL(_ptr->parent) && isNULL(_ptr->right) && isNULL(_ptr->left))
+					_ptr = _ptr->right;
+				else if (isNULL(_ptr->parent) && _ptr->right == prev)
+					while (!isNULL(_ptr))
+						_ptr = _ptr->right;
 			}
 			return (_ptr);
 		}
@@ -70,15 +79,26 @@ namespace ft {
 		}
 
 		BiIterator	operator--() {
-			if (_ptr->left == NULL)
-				if (_ptr->parent == NULL || _ptr->parent->left == _ptr)
-					_ptr--;
-				else
-					_ptr = _ptr->parent;
-			else {
+			if (isNULL(_ptr))
+				return (_ptr->parent);
+			if (!isNULL(_ptr->left)) {
 				_ptr = _ptr->left;
-				while (_ptr->right != NULL)
+				while (!isNULL(_ptr->right))
 					_ptr = _ptr->right;
+			}
+			else {
+				Node	*prev = _ptr;
+				while (!isNULL(_ptr->parent)) {
+					prev = _ptr;
+					_ptr = _ptr->parent;
+					if (_ptr->right == prev)
+						break ;
+				}
+				if (isNULL(_ptr->parent) && isNULL(_ptr->right) && isNULL(_ptr->left))
+					_ptr = _ptr->right;
+				else if (isNULL(_ptr->parent) && _ptr->left == prev)
+					while (!isNULL(_ptr))
+						_ptr = _ptr->left;
 			}
 			return (_ptr);
 		}
@@ -94,6 +114,9 @@ namespace ft {
 		}
 	private:
 		Node	*_ptr;
+		bool	isNULL(Node *n) {
+			return ((n == NULL) || (n == n->right && n == n->left));
+		}
 	};
 
 	template <class T, class Node>

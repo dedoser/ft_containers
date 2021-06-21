@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/20 17:40:37 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/21 16:42:36 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,18 @@ namespace ft {
 			deallocate_elem(_node);
 		}
 
+		list&	operator=(const list &x) {
+			if (this == &x)
+				return (*this);
+			this->~list();
+			Elem	*tmp_elem = x._node;
+			_node = alloc_elem();
+			for (size_type i = 0; i < x._size; ++i) {
+				put_elem_before(_node, tmp_elem->value);
+				tmp_elem = tmp_elem->next;
+			}
+			return (*this);
+		}
 		iterator	begin() {
 			return (iterator(_node->next));
 		}

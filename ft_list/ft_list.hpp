@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 01:32:14 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 14:18:53 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ namespace ft {
 				put_elem_before(_node, tmp_elem->value);
 				tmp_elem = tmp_elem->next;
 			}
+			_size = x._size;
+			_allocator = x._allocator;
 			return (*this);
 		}
 		iterator	begin() {
@@ -243,6 +245,8 @@ namespace ft {
 
 		iterator erase (iterator first, iterator last) {
 			size_type	dist = std::distance(first, last);
+			if (dist > _size)
+				return (first);
 
 			for (size_type i = 0; i < dist; ++i) {
 				erase(first++);
@@ -308,32 +312,38 @@ namespace ft {
 
 		void splice (iterator position, list& x, iterator first, iterator last) {
 			size_type	dist = std::distance(first, last);
-			Elem		*prev_x_start = first.get_pointer()->prev;
-			Elem		*prev_x_end = last.get_pointer()->prev;
-			Elem		*prev_pos = position.get_pointer()->prev;
+			if (dist == 0)
+				return ;
+			Elem	*getterStart = position.get_pointer()->prev;
+			Elem	*getterEnd = position.get_pointer();
+			Elem	*transferedStart = first.get_pointer();
+			Elem	*transferedEnd = last.get_pointer()->prev;
+			Elem	*transferedLastElem = last.get_pointer();
 
-			prev_x_start->next = last.get_pointer();
-			last.get_pointer()->prev = prev_x_start;
-			first.get_pointer()->prev = prev_pos;
-			prev_pos->next = first.get_pointer();
-			prev_x_end->next = position.get_pointer();
-			position.get_pointer()->prev = prev_x_end;
+			transferedLastElem->prev = transferedStart->prev;
+			transferedStart->prev->next = transferedLastElem;
+			getterStart->next = transferedStart;
+			transferedStart->prev = getterStart;
+			getterEnd->prev = transferedEnd;
+			transferedEnd->next = getterEnd;
 			_size += dist;
 			x._size -= dist;
 		}
 
 		void remove (const value_type& val) {
-			Elem	*cur_node = _node->next;
-			Elem	*next_node;
+			Elem		*cur_node = _node->next;
+			Elem		*next_node;
+			size_type	count = 0;
 
 			for (size_type i = 0; i < _size; ++i) {
 				next_node = cur_node->next;
 				if (cur_node->value == val) {
 					destroy_elem(cur_node);
-					_size--;
+					count++;
 				}
 				cur_node = next_node;
 			}
+			_size -= count;
 		}
 
 		template <class Predicate>
@@ -491,6 +501,7 @@ namespace ft {
 			elem = _elem_allocator.allocate(1);
 			elem->next = elem;
 			elem->prev = elem;
+			elem->value = value_type();
 			return (elem);
 		}
 

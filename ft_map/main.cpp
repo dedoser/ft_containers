@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:33 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 21:09:11 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 18:20:07 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,11 @@ int main() {
 	tmp[2] = "s";
 	tmp[3] = "q";
 	tmp[3] = "w";
-	tmp.clear();
+	ft::map<int, std::string>	er(tmp);
+	for (auto it = er.begin(); it != er.end(); it++) {
+		if (it->first)
+			std::cout << it->first << ' ' << it->second << '\n';
+	}
 	// tmp[34] = "rtert";
 	// tmp.erase(tmp.begin());
 	// tmp[3] = "q";

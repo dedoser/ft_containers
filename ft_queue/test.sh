@@ -1,5 +1,5 @@
-clang++ -g test_std_list.cpp -o logs/std
-clang++ -g test_ft_list.cpp -o logs/ft
+clang++ -g test_std_queue.cpp -o logs/std
+clang++ -g test_ft_queue.cpp -o logs/ft
 ./logs/ft > logs/ft_res &
 ./logs/std > logs/std_res &
 sleep 1

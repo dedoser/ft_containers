@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 09:24:25 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/03 22:29:40 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 20:23:41 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ namespace ft
 		}
 
 		pointer				operator->() const {
-			return &(operator*());
+			return (_iter.operator->());
 		}
 
 		reference			operator[](difference_type n) {

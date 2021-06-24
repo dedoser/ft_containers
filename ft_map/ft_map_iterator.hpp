@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 21:04:29 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 20:24:21 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ namespace ft {
 		MapBidirectIterator(const BiIterator &obj) : _ptr(obj._ptr) {}
 		MapBidirectIterator(Node *ptr) : _ptr(ptr) {}
 		virtual ~MapBidirectIterator() {}
-		
+
 		BiIterator	&operator=(const BiIterator &right) {
 			if (this == &right)
 				return (*this);
@@ -43,7 +43,7 @@ namespace ft {
 			return (_ptr->value);
 		}
 
-		pointer		operator->() {
+		pointer		operator->() const {
 			return (&_ptr->value);
 		}
 

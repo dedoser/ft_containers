@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 17:44:02 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 16:24:25 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 18:55:50 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ namespace ft {
 		typedef T																				value_type;
 		typedef T*																				pointer;
 		typedef T&																				reference;
-		typedef ListBidirectionalIterator<T, Node>													BiIterator;
+		typedef ListBidirectionalIterator<T, Node>												BiIterator;
 		typedef typename std::iterator<std::bidirectional_iterator_tag, T>::difference_type		difference_type;
 		typedef typename std::iterator<std::bidirectional_iterator_tag, T>::iterator_category	iterator_category;
 		

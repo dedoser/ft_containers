@@ -71,6 +71,7 @@
 		"chrono": "cpp",
 		"ctime": "cpp",
 		"mutex": "cpp",
-		"ratio": "cpp"
+		"ratio": "cpp",
+		"queue": "cpp"
 	}
 }

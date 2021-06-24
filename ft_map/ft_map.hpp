@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 21:23:10 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 20:41:43 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "ft_map_iterator.hpp"
 #include "../ft_ReverseIterator.hpp"
 #include "../ft_tree.hpp"
+#include <iostream>
 
 namespace ft {
 	template <  class Key,                                     // map::key_type
@@ -62,68 +63,94 @@ namespace ft {
 		explicit map (const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) :
 		_root(NULL), _end_node(0), _beg_node(0), _size(0), _allocator(alloc), _comp(comp) {
+			NIL = create_NIL();
+			_end_node = create_NIL();
+			_beg_node = create_NIL();
 			_root = NIL;
+			init_border_nodes();
 		}
 
 		template <class InputIterator>
 		map (InputIterator first, InputIterator last,
 			const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) :
-			_comp(comp), _allocator(alloc) {
+			_size(0), _comp(comp), _allocator(alloc) {
+			NIL = create_NIL();
 			_root = NIL;
+			_end_node = create_NIL();
+			_beg_node = create_NIL();
+			init_border_nodes();
 			this->insert(first, last);
 		}
 
 		map(const map &x) :
 		_size(x._size), _allocator(x._allocator), _comp(x._comp) {
-			_root = copy_tree(x._root);
+			NIL = create_NIL();
+			_end_node = create_NIL();
+			_beg_node = create_NIL();
+			_root = copy_tree(x._root, this->NIL);
 			this->init_border_nodes();
 		}
 
 		~map() {
-			// print_tree(_root);
+			delete_tree(_root);
+			_node_allocator.deallocate(NIL, 1);
+			_node_allocator.deallocate(_end_node, 1);
+			_node_allocator.deallocate(_beg_node, 1);
+		}
+
+		map	&operator=(const map &right) {
+			if (this == &right)
+				return (*this);
+			this->~map();
+			this->NIL = create_NIL();
+			this->_end_node = create_NIL();
+			this->_beg_node = create_NIL();
+			_root = copy_tree(right._root, NIL);
+			init_border_nodes();
+			_size = right._size;
+			_allocator = right._allocator;
+			return (*this);
 		}
 
 		iterator	begin() {
-			// std::cout << _beg_node << '\n';
-			return (iterator(_beg_node));
+			return (iterator(_beg_node->parent));
 		}
 
 		const_iterator	begin() const {
-			return (const_iterator(_beg_node));
+			return (const_iterator(_beg_node->parent));
 		}
 
 		iterator		end() {
-			// std::cout << _end_node << '\n';
-			return (iterator(NIL));
+			return (iterator(_end_node));
 		}
 
 		const_iterator	end() const {
-			return (const_iterator(NIL));
+			return (const_iterator(_end_node));
 		}
 
 		reverse_iterator	rbegin() {
-			if (_end_node == NIL)
-				return (reverse_iterator(_end_node));
-			return (reverse_iterator(_end_node));
+			if (_root == NIL)
+				return (reverse_iterator(_root));
+			return (reverse_iterator(_end_node->parent));
 		}
 
 		const_reverse_iterator	rbegin() const {
-			if (_end_node == NIL)
-				return (const_reverse_iterator(_end_node));
-			return (const_reverse_iterator(_end_node));
+			if (_root == NIL)
+				return (const_reverse_iterator(_root));
+			return (const_reverse_iterator(_end_node->parent));
 		}
 
 		reverse_iterator	rend() {
-			if (_beg_node == NIL)
+			if (_root == NIL)
 				return (reverse_iterator(NIL));
-			return (reverse_iterator(--this->begin()));
+			return (reverse_iterator(_beg_node));
 		}
 
 		const_reverse_iterator	rend() const {
-			if (_beg_node == NIL)
+			if (_root == NIL)
 				return (const_reverse_iterator(NIL));
-			return (const_reverse_iterator(--this->begin()));
+			return (const_reverse_iterator(_beg_node));
 		}
 
 		bool	empty() const {
@@ -210,7 +237,6 @@ namespace ft {
 			ft::swap(_size, x._size);
 			ft::swap(_allocator, x._allocator);
 			ft::swap(_comp, x._comp);
-			ft::swap(sent, x.sent);
 			ft::swap(NIL, x.NIL);
 		}
 
@@ -235,7 +261,7 @@ namespace ft {
 
 		const_iterator	find(const key_type &k) const {
 			std::pair<node *, node *>	res = find_node(k);
-			if (res.first == NIL);
+			if (res.first == NIL)
 				return (this->end());
 			return (res.first);
 		}
@@ -250,7 +276,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(tmp->value.first, key))
+				if (_comp(tmp->value.first, k))
 					tmp = tmp->right;
 				else
 					return (tmp);
@@ -262,7 +288,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(tmp->value.first, key))
+				if (_comp(tmp->value.first, k))
 					tmp = tmp->right;
 				else
 					return (tmp);
@@ -274,7 +300,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(key, tmp->value.first))
+				if (_comp(k, tmp->value.first))
 					tmp = tmp->left;
 				else
 					return (tmp);
@@ -286,7 +312,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(key, tmp->value.first))
+				if (_comp(k, tmp->value.first))
 					tmp = tmp->left;
 				else
 					return (tmp);
@@ -294,12 +320,12 @@ namespace ft {
 			return (this->end());
 		}
 
-		pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
+		std::pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
 			return (std::make_pair<const_iterator, const_iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
 
-		pair<iterator,iterator>	equal_range (const key_type& k) {
+		std::pair<iterator,iterator>	equal_range (const key_type& k) {
 			return (std::make_pair<iterator, iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
@@ -316,9 +342,18 @@ namespace ft {
 		allocator_type			_allocator;
 		std::allocator<node>	_node_allocator;
 		key_compare				_comp;
-		node					sent = {value_type(), &sent, &sent, NULL, BLACK};
-		node					*NIL = &sent;
+		node					*NIL;
 
+		node	*create_NIL() {
+			node	*res;
+
+			res = _node_allocator.allocate(1);
+			res->left = res;
+			res->right = res;
+			res->parent = NULL;
+			res->color = BLACK;
+			return (res);
+		}
 		node	*create_node(const value_type &val) {
 			node	*elem;
 
@@ -336,15 +371,26 @@ namespace ft {
 			_node_allocator.deallocate(n, 1);
 		}
 
+		void	delete_tree(node *root) {
+			if (root == NIL)
+				return ;
+			node	*right = root->right;
+			delete_tree(root->left);
+			_allocator.destroy(&root->value);
+			_node_allocator.deallocate(root, 1);
+			delete_tree(right);
+		}
+
 		void	init_border_nodes() {
-			_beg_node = _root;
-			_end_node = _root;
-			while (_beg_node->left != NIL)
-				_beg_node = _beg_node->left;
-			while (_end_node->right != NIL)
-				_end_node = _end_node->right;
-			NIL->parent = _end_node;
-			// std::cout << _beg_node->value.first << ' ' << _end_node->value.first << '\n';
+			node	*beg = _root, *end = _root;
+			while (beg->left != NIL)
+				beg = beg->left;
+			while (end->right != NIL)
+				end = end->right;
+			_beg_node->parent = beg;
+			beg->left = _beg_node;
+			_end_node->parent = end;
+			end->right = _end_node;
 		}
 
 		void	balance_tree(node *n) {
@@ -382,16 +428,14 @@ namespace ft {
 			return (new_elem);
 		}
 
-		node	*copy_tree(node *root) {
-			if (root == NIL)
+		node	*copy_tree(node *root, node *NIL) {
+			if (root->left == root && root->right == root)
 				return (NIL);
-			node	*res;
-
-			res = copy_node(root);
-			res->left = copy_tree(root->left);
+			node	*res = copy_node(root);
+			res->left = copy_tree(root->left, NIL);
 			if (res->left != NIL)
 				res->left->parent = res;
-			res->right = copy_tree(root->right);
+			res->right = copy_tree(root->right, NIL);
 			if (res->right != NIL)
 				res->right->parent = res;
 			return (res);

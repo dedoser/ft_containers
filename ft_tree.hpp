@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/19 17:34:39 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 20:45:13 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,19 @@ namespace ft {
 	};
 
 	template <class value_type>
+	bool	isNIL(Node<value_type> *n) {
+		return (n->right == n && n->left == n);
+	}
+	
+	template <class value_type>
 	void	rotateLeft(Node<value_type> *x, Node<value_type> **root,
 					   Node<value_type> *NIL) {
 		Node<value_type> *y = x->right;
 
 		x->right = y->left;
-		if (y->left != NIL)
+		if (!isNIL(y->left))
 			y->left->parent = x;
-		if (y != NIL)
+		if (!isNIL(y))
 			y->parent = x->parent;
 		if (x->parent) {
 			if (x == x->parent->left)
@@ -46,7 +51,7 @@ namespace ft {
 			*root = y;
 		}
 		y->left = x;
-		if (x != NIL)
+		if (!isNIL(x))
 			x->parent = y;
 	}
 
@@ -56,9 +61,9 @@ namespace ft {
 		Node<value_type> *y = x->left;
 
 		x->left = y->right;
-		if (y->right != NIL)
+		if (!isNIL(y->right))
 			y->right->parent = x;
-		if (y != NIL)
+		if (!isNIL(y))
 			y->parent = x->parent;
 		if (x->parent) {
 			if (x == x->parent->right)
@@ -69,7 +74,7 @@ namespace ft {
 			*root = y;
 		}
 		y->right = x;
-		if (x != NIL)
+		if (!isNIL(x))
 			x->parent = y;
 	}
 

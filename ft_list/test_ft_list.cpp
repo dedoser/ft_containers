@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 16:09:52 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 14:44:14 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 16:10:53 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,11 +280,110 @@ void	check_unique() {
 }
 
 bool mycomparison (double first, double second) {
-	return ( int(first) < int(second));
+	return ( int(first)<int(second) );
 }
 
 void	check_merge() {
+	ns::list<int>	m(10, 0);
+	ns::list<int>	k;
+	ns::list<int>	l;
+	for (int i = 0; i < 10; ++i) {
+		m.push_back(i + 1);
+		m.push_front(10 - i);
+		k.push_front(i * 2 + (i % 2) * 3);
+		l.push_back(i - 1);
+	}
+	m.merge(k);
+	print_list(m);
+	print_list(k);
+	m.sort();
+	m.merge(l);
+	print_list(m);
+
+	ns::list<double> first, second;
+
+	first.push_back (3.1);
+	first.push_back (2.2);
+	first.push_back (2.9);
+	second.push_back (3.7);
+	second.push_back (7.1);
+	second.push_back (1.4);
+	first.sort();
+	second.sort();
+	first.merge(second);
+	second.push_back (2.1);
+	first.merge(second, mycomparison);
+	print_list(first);
+	print_list(second);
+	first.merge(second);
+	print_list(first);
+}
+
+bool compare_nocase (const std::string& first, const std::string& second)
+{
+	unsigned int i = 0;
+	while ((i < first.length()) && (i < second.length()))
+	{
+		if (tolower(first[i]) < tolower(second[i]))
+			return (true);
+		else if (tolower(first[i]) > tolower(second[i]))
+			return (false);
+		++i;
+	}
+	return (first.length() < second.length());
+}
+
+void	check_sort() {
+	ns::list<int>	m(10, 0);
+	for (int i = 0; i < 30; ++i) {
+		m.push_front(30 - i);
+		m.push_back(30 - i);
+	}
+	m.sort();
+	print_list(m);
+	ns::list<std::string>	mylist;
+	mylist.push_back ("one");
+	mylist.push_back ("two");
+	mylist.push_back ("Three");
+	mylist.sort();
+	print_list(mylist);
+	mylist.sort(compare_nocase);
+	print_list(mylist);
+}
+
+void	check_reverse() {
+	ns::list<int>	m(10, 1);
+
+	for (int i = 0; i < 40; ++i) {
+		m.push_back(i);
+		m.push_front(20 - i);
+		m.insert(++m.begin(), 3, i);
+	}
+	m.reverse();
+	print_list(m);
+}
+
+void	check_relOperators() {
+	ns::list<int>	m;
+	ns::list<int>	k;
 	
+	std::cout << (m == k) << '\n';
+	for (int i = 0; i < 2; ++i) {
+		m.push_back(i);
+		k.push_back(i);
+	}
+	std::cout << (m == k) << '\n';
+	m.back() = 10;
+	std::cout << (m == k) << '\n';
+	m.push_back(8);
+	std::cout << (m != k) << '\n';
+	std::cout << (m < k) << '\n';
+	std::cout << (m > k) << '\n';
+	k.back() = 10;
+	std::cout << (m < k) << '\n';
+	std::cout << (m > k) << '\n';
+	std::cout << (m <= k) << '\n';
+	std::cout << (m >= k) << '\n';
 }
 
 int main() {
@@ -304,5 +403,8 @@ int main() {
 	check_remove_if();
 	check_unique();
 	check_merge();
-	sleep(5);
+	check_sort();
+	check_reverse();
+	check_relOperators();
+	sleep(2);
 }

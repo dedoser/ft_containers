@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 14:18:53 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 16:11:02 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <cstring>
 #include <limits>
 #include <cstddef>
+#include <algorithm>
 
 namespace ft {
 	template <class T, class Alloc = std::allocator<T> > class list {
@@ -380,114 +381,114 @@ namespace ft {
 			}
 		}
 
-	template <class BinaryPredicate>
-	void unique (BinaryPredicate binary_pred) {
-		iterator	cur_node = ++this->begin();
-		iterator	next_node;
-		iterator	prev_node = this->begin();
+		template <class BinaryPredicate>
+		void unique (BinaryPredicate binary_pred) {
+			iterator	cur_node = ++this->begin();
+			iterator	next_node;
+			iterator	prev_node = this->begin();
 
-		while (cur_node != this->end()) {
-			next_node = cur_node;
-			next_node++;
-			if (binary_pred(*cur_node, *prev_node)) {
-				destroy_elem(cur_node.get_pointer());
-				_size--;
-			}
-			else
-				prev_node = cur_node;
-			cur_node = next_node;
-		}
-	}
-
-	void	merge(list &x) {
-		if (&x == this)
-			return ;
-		iterator	cur_node = this->begin();
-		iterator	x_cur_node = x.begin();
-
-		while (cur_node != this->end()) {
-			iterator	x_end_node = x_cur_node;
-			while (x_end_node != x.end()
-				&& *x_end_node < *cur_node) {
-				++x_end_node;
-			}
-			if (x_end_node == x_cur_node)
-				cur_node++;
-			else {
-				splice(cur_node, x, x_cur_node, x_end_node);
-				x_cur_node = x_end_node;
+			while (cur_node != this->end()) {
+				next_node = cur_node;
+				next_node++;
+				if (binary_pred(*cur_node, *prev_node)) {
+					destroy_elem(cur_node.get_pointer());
+					_size--;
+				}
+				else
+					prev_node = cur_node;
+				cur_node = next_node;
 			}
 		}
-		if (x._size != 0)
-			splice(cur_node, x);
-	}
 
-	template <class Compare>
-	void merge (list& x, Compare comp) {
-		if (&x == this)
-			return ;
-		iterator	cur_node = this->begin();
-		iterator	x_cur_node = x.begin();
+		void	merge(list &x) {
+			if (&x == this || x.size() == 0)
+				return ;
+			iterator	cur_node = this->begin();
+			iterator	x_cur_node = x.begin();
 
-		while (cur_node != this->end()) {
-			iterator	x_end_node = x_cur_node;
-			while (x_end_node != x.end()
-				&& comp(*x_end_node, *cur_node)) {
-				++x_end_node;
+			while (cur_node != this->end()) {
+				iterator	x_end_node = x_cur_node;
+				while (x_end_node != x.end()
+					&& *x_end_node < *cur_node) {
+					++x_end_node;
+				}
+				if (x_end_node == x_cur_node)
+					cur_node++;
+				else {
+					splice(cur_node, x, x_cur_node, x_end_node);
+					x_cur_node = x_end_node;
+				}
 			}
-			if (x_end_node == x_cur_node)
-				cur_node++;
-			else {
-				splice(cur_node, x, x_cur_node, x_end_node);
-				x_cur_node = x_end_node;
+			if (x._size != 0)
+				splice(cur_node, x);
+		}
+
+		template <class Compare>
+		void merge (list& x, Compare comp) {
+			if (&x == this || x.size() == 0)
+				return ;
+			iterator	cur_node = this->begin();
+			iterator	x_cur_node = x.begin();
+
+			while (cur_node != this->end()) {
+				iterator	x_end_node = x_cur_node;
+				while (x_end_node != x.end()
+					&& comp(*x_end_node, *cur_node)) {
+					++x_end_node;
+				}
+				if (x_end_node == x_cur_node)
+					cur_node++;
+				else {
+					splice(cur_node, x, x_cur_node, x_end_node);
+					x_cur_node = x_end_node;
+				}
+			}
+			if (x._size != 0)
+				splice(cur_node, x);
+		}
+
+		void	sort() {
+			iterator	endList = --this->end();
+			for (iterator cur = this->begin(); cur != endList; ++cur) {
+				iterator	next = cur;
+				++next;
+				for (; next != this->end(); ++next) {
+					if (*next < *cur)
+						ft::swap(*next, *cur);
+				}
 			}
 		}
-		if (x._size != 0)
-			splice(cur_node, x);
-	}
-
-	void	sort() {
-		iterator	endList = --this->end();
-		for (iterator cur = this->begin(); cur != endList; ++cur) {
-			iterator	next = cur;
-			++next;
-			for (; next != this->end(); ++next) {
-				if (*next < *cur)
-					ft::swap(*next, *cur);
+		
+		template <class Compare>
+		void sort (Compare comp) {
+			iterator	endList = --this->end();
+			for (iterator cur = this->begin(); cur != endList; ++cur) {
+				iterator	next = cur;
+				++next;
+				for (; next != this->end(); ++next) {
+					if (comp(*next, *cur))
+						ft::swap(*next, *cur);
+				}
 			}
 		}
-	}
-	
-	template <class Compare>
-	void sort (Compare comp) {
-		iterator	endList = --this->end();
-		for (iterator cur = this->begin(); cur != endList; ++cur) {
-			iterator	next = cur;
-			++next;
-			for (; next != this->end(); ++next) {
-				if (comp(*next, *cur))
-					ft::swap(*next, *cur);
+
+		void	reverse() {
+			Elem	*start = _node->next;
+			Elem	*end = _node->prev;
+
+			for (size_type i = 0; i < _size / 2; ++i) {
+				Elem	*startNext = start->next;
+				Elem	*endPrev = end->prev;
+				swap_node(start, end);
+				start = startNext;
+				end = endPrev;
+				
 			}
 		}
-	}
-
-	void	reverse() {
-		Elem	*start = _node->next;
-		Elem	*end = _node->prev;
-
-		for (size_type i = 0; i < _size / 2; ++i) {
-			Elem	*startNext = start->next;
-			Elem	*endPrev = end->prev;
-			swap_node(start, end);
-			start = startNext;
-			end = endPrev;
-			
+		
+		allocator_type	get_allocator() const {
+			return (_allocator);
 		}
-	}
-	
-	allocator_type	get_allocator() const {
-		return (_allocator);
-	}
 	
 	private:
 		Elem					*_node;
@@ -584,17 +585,8 @@ namespace ft {
 
 	template <class T, class Alloc>
 	bool operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
-		typename ft::list<T, Alloc>::const_iterator	lit = lhs.begin();
-		typename ft::list<T, Alloc>::const_iterator	rit = rhs.begin();
-
-		while (lit != lhs.end()
-			&& rit != rhs.end()) {
-			if (*lit < *rit)
-				return (true);
-			++lit;
-			++rit;
-		}
-		return (false);
+		return (std::lexicographical_compare(lhs.begin(), lhs.end(),
+											 rhs.begin(), rhs.end()));
 	}
 	template <class T, class Alloc>
 	bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {

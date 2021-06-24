@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 14:11:17 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/16 15:11:10 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 16:56:08 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ namespace ft {
 
 	protected:
 		container_type	c;
-
 	public:
 		explicit stack(const container_type &cntr = container_type()) : c(cntr) {}
 		stack(const stack &x) : c(x.c) {}

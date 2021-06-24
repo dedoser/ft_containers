@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_ft_list.cpp                                   :+:      :+:    :+:   */
+/*   test_std_list.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 16:09:52 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 01:50:35 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 01:46:47 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "test_class.hpp"
 #include <list>
 
-#define	ns 		ft
+#define	ns 		std
 
 typedef	ns::list<int>::iterator	iterator;
 typedef	ns::list<int>::const_iterator	const_iterator;
@@ -123,10 +123,6 @@ void	check_pop() {
 	print_list(l);
 }
 
-void	check_insert() {
-	
-}
-
 int main() {
 	check_constructor_and_assignOperator();
 	check_iterators();
@@ -135,5 +131,4 @@ int main() {
 	check_assign();
 	check_push();
 	check_pop();
-	check_insert();
 }

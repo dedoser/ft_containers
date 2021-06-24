@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/21 16:42:36 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/24 01:32:14 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ namespace ft {
 
 		list (const list &obj) :
 		_node(NULL), _size(obj._size), _allocator(obj._allocator){
-			Elem	*tmp_elem = obj._node;
+			Elem	*tmp_elem = obj._node->next;
 			_node = alloc_elem();
 			for (size_type i = 0; i < obj._size; ++i) {
 				put_elem_before(_node, tmp_elem->value);
@@ -89,9 +89,10 @@ namespace ft {
 			Elem	*tmp_elem = _node->prev;
 
 			for (size_type i = 0; i < _size; ++i) {
-				destroy_elem(_node);
-				_node = tmp_elem;
-				tmp_elem = _node->prev;
+				Elem	*prev;
+				prev = tmp_elem->prev;
+				destroy_elem(tmp_elem);
+				tmp_elem = prev;
 			}
 			deallocate_elem(_node);
 		}

@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/25 03:56:15 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/25 18:51:52 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ namespace ft {
 		MapBidirectIterator(const BiIterator &obj) : _ptr(obj._ptr) {}
 		MapBidirectIterator(Node *ptr) : _ptr(ptr) {}
 		virtual ~MapBidirectIterator() {}
-
+		
 		BiIterator	&operator=(const BiIterator &right) {
 			if (this == &right)
 				return (*this);
@@ -48,6 +48,11 @@ namespace ft {
 		}
 
 		BiIterator	operator++() {
+			if (_ptr->left == _ptr && _ptr->right == _ptr &&
+				_ptr->revParent != NULL) {
+				_ptr = _ptr->revParent;
+				return (_ptr);
+			}
 			if (isNULL(_ptr))
 				return (NULL);
 			if (!isNULL(_ptr->right)) {
@@ -81,6 +86,10 @@ namespace ft {
 		BiIterator	operator--() {
 			if (isNULL(_ptr))
 				return (_ptr->parent);
+			if (isNIL(_ptr->left) && _ptr->left->revParent != NULL) {
+				_ptr = _ptr->left;
+				return (_ptr->left);
+			}
 			if (!isNULL(_ptr->left)) {
 				_ptr = _ptr->left;
 				while (!isNULL(_ptr->right))
@@ -122,11 +131,8 @@ namespace ft {
 	template <class T, class Node>
 	bool	operator==(const MapBidirectIterator<T, Node> &lhs,
 					   const MapBidirectIterator<T, Node> &rhs) {
-		return (lhs.get_pointer() == rhs.get_pointer() || 
-				(lhs.get_pointer()->left == lhs.get_pointer() &&
-				lhs.get_pointer()->right == lhs.get_pointer() &&
-				rhs.get_pointer()->left == rhs.get_pointer() &&
-				rhs.get_pointer()->right == rhs.get_pointer()));
+		return (lhs.get_pointer() == rhs.get_pointer() ||
+				(isNIL(lhs.get_pointer() && isNIL(rhs.get_pointer()))));
 	}
 
 	template <class T, class Node>

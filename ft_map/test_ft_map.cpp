@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 18:22:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 20:22:38 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/25 19:27:29 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,10 @@ void	check_iterators() {
 	for (; it != m.end(); ++it) {
 		std::cout << it->first << ' ' << it->second << '\n';
 		std::cout << rit->first << ' ' << rit->second << '\n';
+		rit++;
 	}
 	std::cout << (--m.end())->first << ' ' << (--m.end())->second << '\n';
-	std::cout << (--m.rend())->first << ' ' << (--m.rend())->second << '\n';
+	std::cout << (++----m.rend())->first << ' ' << (--m.rend())->second << '\n';
 }
 
 int main() {

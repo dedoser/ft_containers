@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/25 03:57:50 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/25 18:39:03 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "ft_map_iterator.hpp"
 #include "../ft_ReverseIterator.hpp"
 #include "../ft_tree.hpp"
+#include <iostream>
 
 namespace ft {
 	template <  class Key,                                     // map::key_type
@@ -63,8 +64,7 @@ namespace ft {
 			const allocator_type& alloc = allocator_type()) :
 		_root(NULL), _end_node(0), _beg_node(0), _size(0), _allocator(alloc), _comp(comp) {
 			NIL = create_NIL();
-			_end_node = create_NIL();
-			_beg_node = create_NIL();
+			revNIL = create_NIL();
 			_root = NIL;
 			init_border_nodes();
 		}
@@ -75,27 +75,25 @@ namespace ft {
 			const allocator_type& alloc = allocator_type()) :
 			_size(0), _comp(comp), _allocator(alloc) {
 			NIL = create_NIL();
+			revNIL = create_NIL();
 			_root = NIL;
-			_end_node = create_NIL();
-			_beg_node = create_NIL();
-			init_border_nodes();
 			this->insert(first, last);
+			init_border_nodes();
 		}
 
 		map(const map &x) :
 		_size(x._size), _allocator(x._allocator), _comp(x._comp) {
 			NIL = create_NIL();
-			_end_node = create_NIL();
-			_beg_node = create_NIL();
-			_root = copy_tree(x._root, this->NIL);
+			revNIL = create_NIL();
+			_root = copy_tree(x._root, NIL);
 			this->init_border_nodes();
 		}
 
 		~map() {
+			init_NIL();
 			delete_tree(_root);
 			_node_allocator.deallocate(NIL, 1);
-			_node_allocator.deallocate(_end_node, 1);
-			_node_allocator.deallocate(_beg_node, 1);
+			_node_allocator.deallocate(revNIL, 1);
 		}
 
 		map	&operator=(const map &right) {
@@ -103,8 +101,7 @@ namespace ft {
 				return (*this);
 			this->~map();
 			this->NIL = create_NIL();
-			this->_end_node = create_NIL();
-			this->_beg_node = create_NIL();
+			this->revNIL = create_NIL();
 			_root = copy_tree(right._root, NIL);
 			init_border_nodes();
 			_size = right._size;
@@ -113,6 +110,7 @@ namespace ft {
 		}
 
 		iterator	begin() {
+			// std::cout << _beg_node << '\n';
 			return (iterator(_beg_node));
 		}
 
@@ -121,6 +119,7 @@ namespace ft {
 		}
 
 		iterator		end() {
+			// std::cout << _end_node << '\n';
 			return (iterator(NIL));
 		}
 
@@ -173,10 +172,10 @@ namespace ft {
 			node	*parent, *x;
 
 			std::pair<node *, node *>	is_in_map = find_node(val.first);
-			if (is_in_map.first != NIL)
+			if (!isNIL(is_in_map.first))
 				return (std::make_pair<iterator, bool>(is_in_map.first, false));
 			x = create_node(val);
-			if (is_in_map.second == NIL)
+			if (isNIL(is_in_map.second))
 				parent = 0;
 			else
 				parent = is_in_map.second;
@@ -236,7 +235,6 @@ namespace ft {
 			ft::swap(_size, x._size);
 			ft::swap(_allocator, x._allocator);
 			ft::swap(_comp, x._comp);
-			ft::swap(sent, x.sent);
 			ft::swap(NIL, x.NIL);
 		}
 
@@ -261,7 +259,7 @@ namespace ft {
 
 		const_iterator	find(const key_type &k) const {
 			std::pair<node *, node *>	res = find_node(k);
-			if (res.first == NIL);
+			if (res.first == NIL)
 				return (this->end());
 			return (res.first);
 		}
@@ -276,7 +274,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(tmp->value.first, key))
+				if (_comp(tmp->value.first, k))
 					tmp = tmp->right;
 				else
 					return (tmp);
@@ -288,7 +286,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(tmp->value.first, key))
+				if (_comp(tmp->value.first, k))
 					tmp = tmp->right;
 				else
 					return (tmp);
@@ -300,7 +298,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(key, tmp->value.first))
+				if (_comp(k, tmp->value.first))
 					tmp = tmp->left;
 				else
 					return (tmp);
@@ -312,7 +310,7 @@ namespace ft {
 			node	*tmp = _root;
 
 			while (tmp != NIL) {
-				if (_comp(key, tmp->value.first))
+				if (_comp(k, tmp->value.first))
 					tmp = tmp->left;
 				else
 					return (tmp);
@@ -320,12 +318,12 @@ namespace ft {
 			return (this->end());
 		}
 
-		pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
+		std::pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
 			return (std::make_pair<const_iterator, const_iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
 
-		pair<iterator,iterator>	equal_range (const key_type& k) {
+		std::pair<iterator,iterator>	equal_range (const key_type& k) {
 			return (std::make_pair<iterator, iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
@@ -342,20 +340,27 @@ namespace ft {
 		allocator_type			_allocator;
 		std::allocator<node>	_node_allocator;
 		key_compare				_comp;
-		node					sent = {value_type(), &sent, &sent, NULL, BLACK};
-		node					*NIL = &sent;
+		node					*NIL;
+		node					*revNIL;
 
 		node	*create_NIL() {
 			node	*res;
 
 			res = _node_allocator.allocate(1);
+			_allocator.construct(&res->value, value_type());
 			res->left = res;
 			res->right = res;
 			res->parent = NULL;
 			res->color = BLACK;
-			res->isRevIter = false;
 			res->revParent = NULL;
 			return (res);
+		}
+
+		void	init_NIL() {
+			NIL->left = NIL;
+			NIL->right = NIL;
+			revNIL->left = revNIL;
+			revNIL->right = revNIL;
 		}
 
 		node	*create_node(const value_type &val) {
@@ -368,7 +373,6 @@ namespace ft {
 			elem->parent = NULL;
 			elem->revParent = NULL;
 			elem->color = RED;
-			elem->isRevIter = false;
 			return (elem);
 		}
 
@@ -377,16 +381,29 @@ namespace ft {
 			_node_allocator.deallocate(n, 1);
 		}
 
+		void	delete_tree(node *root) {
+			if (isNIL(root))
+				return ;
+			node	*right = root->right;
+			delete_tree(root->left);
+			_allocator.destroy(&root->value);
+			_node_allocator.deallocate(root, 1);
+			delete_tree(right);
+		}
+
 		void	init_border_nodes() {
-			node	*beg = _root, *end = _root;
-			while (beg->left != NIL)
-				beg = beg->left;
-			while (end->right != NIL)
-				end = end->right;
-			_beg_node->parent = beg;
-			beg->left = _beg_node;
-			_end_node->parent = end;
-			end->right = _end_node;
+			init_NIL();
+			_beg_node = _root;
+			_end_node = _root;
+			while (!isNIL(_beg_node->left))
+				_beg_node = _beg_node->left;
+			while (!isNIL(_end_node->right))
+				_end_node = _end_node->right;
+			NIL->parent = _end_node;
+			revNIL->parent = _end_node;
+			revNIL->revParent = _beg_node;
+			_beg_node->left = revNIL;
+			// std::cout << _beg_node->value.first << ' ' << _end_node->value.first << '\n';
 		}
 
 		void	balance_tree(node *n) {
@@ -405,7 +422,7 @@ namespace ft {
 			node	*tmp = _root;
 			node	*prev = NIL;
 
-			while (tmp != NIL) {
+			while (!isNIL(tmp)) {
 				prev = tmp;
 				if (_comp(tmp->value.first, key))
 					tmp = tmp->right;
@@ -424,7 +441,7 @@ namespace ft {
 			return (new_elem);
 		}
 
-		node	*copy_tree(node *root) {
+		node	*copy_tree(node *root, node *NIL) {
 			if (root->left == root && root->right == root)
 				return (NIL);
 			node	*res = copy_node(root);
@@ -435,16 +452,6 @@ namespace ft {
 			if (res->right != NIL)
 				res->right->parent = res;
 			return (res);
-		}
-
-		void	delete_tree(node *root) {
-			if (root == NIL)
-				return ;
-			node	*right = root->right;
-			delete_tree(root->left);
-			_allocator.destroy(&root->value);
-			_node_allocator.deallocate(root, 1);
-			delete_tree(right);
 		}
 
 		void	swap_pair(node *lhs, node *rhs) {
@@ -460,16 +467,16 @@ namespace ft {
 		node	*delete_one_child(node *z, node **root) {
 			node *x, *y;
 
-			if (!z || z == NIL)
+			if (!z || isNILL(z))
 				return (z);
-			if (z->left == NIL || z->right == NIL) {
+			if (isNILL(z->left) || isNILL(z->right)) {
 				y = z;
 			} else {
 				y = z->right;
-				while (y->left != NIL)
+				while (!isNILL(y->left))
 					y = y->left;
 			}
-			if (y->left != NIL)
+			if (!isNIL(y->left))
 				x = y->left;
 			else
 				x = y->right;

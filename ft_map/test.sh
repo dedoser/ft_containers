@@ -7,3 +7,5 @@ leaks ft | grep "0 leaks" > logs/ft_leaks
 leaks std | grep "0 leaks" > logs/std_leaks
 sleep 1;
 diff logs/ft_res logs/std_res
+echo -n "ft_map  " ; cat logs/ft_leaks
+echo -n "std_map " ; cat logs/std_leaks

@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/25 18:39:03 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/25 22:13:25 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,49 +271,49 @@ namespace ft {
 		}
 
 		iterator	lower_bound (const key_type& k) {
-			node	*tmp = _root;
+			iterator	it(_beg_node);
 
-			while (tmp != NIL) {
-				if (_comp(tmp->value.first, k))
-					tmp = tmp->right;
+			while (it != this->end()) {
+				if (_comp(it.get_pointer()->value.first, k))
+					++it;
 				else
-					return (tmp);
+					return (it);
 			}
 			return (this->end());
 		}
 
 		const_iterator	lower_bound (const key_type& k) const {
-			node	*tmp = _root;
+			const_iterator	it(_beg_node);
 
-			while (tmp != NIL) {
-				if (_comp(tmp->value.first, k))
-					tmp = tmp->right;
+			while (it != this->end()) {
+				if (_comp(it.get_pointer()->value.first, k))
+					++it;
 				else
-					return (tmp);
+					return (it);
 			}
 			return (this->end());
 		}
 		
 		iterator	upper_bound(const key_type &k) {
-			node	*tmp = _root;
+			iterator	it(_beg_node);
 
-			while (tmp != NIL) {
-				if (_comp(k, tmp->value.first))
-					tmp = tmp->left;
+			while (it != this->end()) {
+				if (_comp(k, it.get_pointer()->value.first))
+					return (it);
 				else
-					return (tmp);
+					it++;
 			}
 			return (this->end());
 		}
 
 		const_iterator	upper_bound(const key_type &k) const {
-			node	*tmp = _root;
+			const_iterator	it(_beg_node);
 
-			while (tmp != NIL) {
-				if (_comp(k, tmp->value.first))
-					tmp = tmp->left;
+			while (it != this->end()) {
+				if (_comp(k, it.get_pointer()->value.first))
+					return (it);
 				else
-					return (tmp);
+					it++;
 			}
 			return (this->end());
 		}
@@ -467,13 +467,13 @@ namespace ft {
 		node	*delete_one_child(node *z, node **root) {
 			node *x, *y;
 
-			if (!z || isNILL(z))
+			if (!z || isNIL(z))
 				return (z);
-			if (isNILL(z->left) || isNILL(z->right)) {
+			if (isNIL(z->left) || isNIL(z->right)) {
 				y = z;
 			} else {
 				y = z->right;
-				while (!isNILL(y->left))
+				while (!isNIL(y->left))
 					y = y->left;
 			}
 			if (!isNIL(y->left))

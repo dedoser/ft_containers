@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 20:24:21 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/25 03:56:15 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,11 @@ namespace ft {
 	template <class T, class Node>
 	bool	operator==(const MapBidirectIterator<T, Node> &lhs,
 					   const MapBidirectIterator<T, Node> &rhs) {
-		return (lhs.get_pointer() == rhs.get_pointer());
+		return (lhs.get_pointer() == rhs.get_pointer() || 
+				(lhs.get_pointer()->left == lhs.get_pointer() &&
+				lhs.get_pointer()->right == lhs.get_pointer() &&
+				rhs.get_pointer()->left == rhs.get_pointer() &&
+				rhs.get_pointer()->right == rhs.get_pointer()));
 	}
 
 	template <class T, class Node>

@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/25 22:13:25 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/26 16:53:32 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 #include "ft_map_iterator.hpp"
 #include "../ft_ReverseIterator.hpp"
 #include "../ft_tree.hpp"
-#include <iostream>
 
 namespace ft {
 	template <  class Key,                                     // map::key_type

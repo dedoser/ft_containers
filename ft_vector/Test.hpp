@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/03 20:47:22 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/04 17:54:05 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/26 16:44:35 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,16 @@ public:
 		std::vector<T>	stdTmp(10, 0);
 		_ftv = ftTmp;
 		_stdv = stdTmp;
-		// AssertCompareContent(_ftv, ftTmp);
-		// AssertCompareContent(_stdv, stdTmp);
-		// AssertCompareContent(_ftv, _stdv);
-		// ftTmp.push_back(1);
-		// stdTmp.push_back(1);
+		AssertCompareContent(_ftv, ftTmp);
+		AssertCompareContent(_stdv, stdTmp);
+		AssertCompareContent(_ftv, _stdv);
+		ftTmp.push_back(1);
+		stdTmp.push_back(1);
 		_ftv = ftTmp;
 		_stdv = stdTmp;
-		// AssertCompareContent(_ftv, ftTmp);
-		// AssertCompareContent(_stdv, stdTmp);
-		// AssertCompareContent(_ftv, _stdv);
+		AssertCompareContent(_ftv, ftTmp);
+		AssertCompareContent(_stdv, stdTmp);
+		AssertCompareContent(_ftv, _stdv);
 		std::cout << "Assign Operator Test - SUCCESS\n";
 	}
 	void	IteratorsTest() {

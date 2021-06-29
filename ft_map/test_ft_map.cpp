@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 18:22:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/25 22:19:24 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 00:51:50 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,12 @@ void	check_insert() {
 	m[4] = "rrgrrg";
 	m[3] = "ffvfvfvfv";
 	for (int i = 0; i < 10; ++i) {
-		std::pair<ns::map<int, std::string>::iterator, bool>	p(m.insert(std::make_pair(i, "werwrwer")));
+		ns::pair<ns::map<int, std::string>::iterator, bool>	p(m.insert(ns::make_pair(i, "werwrwer")));
 		std::cout << p.first->first << ' ' << p.first->second << ' ' << p.second << '\n';
 		print_map(m);
 	}
 	for (int i = 0; i < 15; ++i) {
-		ns::map<int, std::string>::iterator	it = m.insert(m.begin(), std::make_pair(10 + i, "werwrwer"));
+		ns::map<int, std::string>::iterator	it = m.insert(m.begin(), ns::make_pair(10 + i, "werwrwer"));
 		std::cout << it->first << ' ' << it->second << '\n';
 	}
 	print_map(m);
@@ -193,7 +193,7 @@ void	check_equal_range() {
 	for (int i = 0; i < 20; ++i)
 		m[i * 2 + (i % 2) * 3] = i;
 	for (int i = 0; i < 20; ++i) {
-		std::pair<ns::map<int, int>::iterator, ns::map<int, int>::iterator>	p(m.equal_range(i * 2));
+		ns::pair<ns::map<int, int>::iterator, ns::map<int, int>::iterator>	p(m.equal_range(i * 2));
 		std::cout << p.first->first << ' ' << p.first->second << "---" << p.second->first << ' ' << p.second->second << '\n';
 	}
 }

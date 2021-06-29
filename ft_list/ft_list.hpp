@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 18:23:43 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 16:11:02 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 01:23:20 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ namespace ft {
 			T			value;
 			Elem		*next;
 			Elem		*prev;
+			Elem() : value(T()), next(NULL), prev(NULL) {}
 		};
 
 	public:
@@ -95,6 +96,7 @@ namespace ft {
 				destroy_elem(tmp_elem);
 				tmp_elem = prev;
 			}
+			_elem_allocator.destroy(_node);
 			deallocate_elem(_node);
 		}
 
@@ -500,15 +502,16 @@ namespace ft {
 			Elem	*elem;
 
 			elem = _elem_allocator.allocate(1);
+			_elem_allocator.construct(elem, Elem());
 			elem->next = elem;
 			elem->prev = elem;
-			elem->value = value_type();
 			return (elem);
 		}
 
 		Elem	*construct_elem(const value_type &val) {
 			Elem	*elem = alloc_elem();
 
+			_allocator.destroy(&elem->value);
 			_allocator.construct(&elem->value, val);
 			return (elem);
 		}
@@ -585,7 +588,7 @@ namespace ft {
 
 	template <class T, class Alloc>
 	bool operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs) {
-		return (std::lexicographical_compare(lhs.begin(), lhs.end(),
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
 											 rhs.begin(), rhs.end()));
 	}
 	template <class T, class Alloc>

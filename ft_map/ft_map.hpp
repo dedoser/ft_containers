@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/29 22:28:43 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 00:50:41 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
+#include "../ft_pair.hpp"
 #include "ft_map_iterator.hpp"
 #include "../ft_ReverseIterator.hpp"
 #include "../ft_tree.hpp"
@@ -24,12 +25,12 @@ namespace ft {
 	template <  class Key,                                     // map::key_type
 				class T,                                       // map::mapped_type
 				class Compare = std::less<Key>,                     // map::key_compare
-				class Alloc = std::allocator<std::pair<const Key,T> > >
+				class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
 	public:
 		typedef	Key												key_type;
 		typedef	T												mapped_type;
-		typedef	std::pair<const key_type, mapped_type>			value_type;
+		typedef	ft::pair<const key_type, mapped_type>			value_type;
 		typedef	Node<value_type>								node;
 		typedef	Compare											key_compare;
 		typedef	Alloc											allocator_type;
@@ -170,15 +171,15 @@ namespace ft {
 
 		mapped_type	&operator[](const key_type &k) {
 			return (
-				(*((this->insert(std::make_pair(k, mapped_type()))).first)).second
+				(*((this->insert(ft::make_pair(k, mapped_type()))).first)).second
 			);
 		}
-		std::pair<iterator, bool>	insert(const value_type &val) {
+		ft::pair<iterator, bool>	insert(const value_type &val) {
 			node	*parent, *x;
 
-			std::pair<node *, node *>	is_in_map = find_node(val.first);
+			ft::pair<node *, node *>	is_in_map = find_node(val.first);
 			if (!isNIL(is_in_map.first))
-				return (std::make_pair<iterator, bool>(is_in_map.first, false));
+				return (ft::make_pair<iterator, bool>(is_in_map.first, false));
 			x = create_node(val);
 			if (isNIL(is_in_map.second))
 				parent = 0;
@@ -191,7 +192,7 @@ namespace ft {
 				_root = x;
 			balance_tree(x);
 			_size++;
-			return (std::pair<iterator, bool>(x, true));
+			return (ft::pair<iterator, bool>(x, true));
 		}
 
 		iterator insert (iterator position, const value_type& val) {
@@ -217,7 +218,7 @@ namespace ft {
 		}
 
 		size_type	erase(const key_type &k) {
-			std::pair<node *, node *>	res = find_node(k);
+			ft::pair<node *, node *>	res = find_node(k);
 			if (res.first == NIL)
 				return (0);
 			erase(res.first);
@@ -242,8 +243,8 @@ namespace ft {
 			ft::swap(_comp, x._comp);
 			ft::swap(NIL, x.NIL);
 			ft::swap(revNIL, x.revNIL);
-			init_leaf(_root);
-			init_leaf(x._root);
+			swap_leafs(_root);
+			swap_leafs(x._root);
 			init_border_nodes();
 			x.init_border_nodes();
 			
@@ -262,14 +263,14 @@ namespace ft {
 		}
 
 		iterator	find(const key_type &k) {
-			std::pair<node *, node *>	res = find_node(k);
+			ft::pair<node *, node *>	res = find_node(k);
 			if (res.first == NIL)
 				return (this->end());
 			return (res.first);
 		}
 
 		const_iterator	find(const key_type &k) const {
-			std::pair<node *, node *>	res = find_node(k);
+			ft::pair<node *, node *>	res = find_node(k);
 			if (res.first == NIL)
 				return (this->end());
 			return (res.first);
@@ -329,19 +330,19 @@ namespace ft {
 			return (this->end());
 		}
 
-		std::pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
+		ft::pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
 			if (this->lower_bound(k) == this->end() && this->upper_bound(k) == this->end())
-				return (std::make_pair<const_iterator, const_iterator>
+				return (ft::make_pair<const_iterator, const_iterator>
 					(this->begin(), this->begin()));
-			return (std::make_pair<const_iterator, const_iterator>
+			return (ft::make_pair<const_iterator, const_iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
 
-		std::pair<iterator,iterator>	equal_range (const key_type& k) {
+		ft::pair<iterator,iterator>	equal_range (const key_type& k) {
 			if (this->lower_bound(k) == this->end() && this->upper_bound(k) == this->end())
-				return (std::make_pair<iterator, iterator>
+				return (ft::make_pair<iterator, iterator>
 					(this->begin(), this->begin()));
-			return (std::make_pair<iterator, iterator>
+			return (ft::make_pair<iterator, iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
 
@@ -428,16 +429,27 @@ namespace ft {
 			init_border_nodes();
 		}
 
-		void	init_leaf(node *root) {
-			if (isNIL(root->left))
-				root->left = NIL;
-			init_leaf(root->left);
-			if (isNIL(root->right))
-				root->right = NIL;
-			init_leaf(root->right);
+		void	init_leaf(node *n, node *new_elem) {
+			if (value_comp()(n->value, new_elem->value))
+				n->right = new_elem;
+			else
+				n->left = new_elem;
 		}
 
-		std::pair<node *, node *>	find_node(const key_type &key) const {
+		void	swap_leafs(node *root) {
+			if (isNIL(root->left)) {
+				root->left = NIL;
+				return ;
+			}
+			swap_leafs(root->left);
+			if (isNIL(root->right)) {
+				root->right = NIL;
+				return ;
+			}
+			swap_leafs(root->right);
+		}
+
+		ft::pair<node *, node *>	find_node(const key_type &key) const {
 			node	*tmp = _root;
 			node	*prev = NIL;
 
@@ -448,9 +460,9 @@ namespace ft {
 				else if (_comp(key, tmp->value.first))
 					tmp = tmp->left;
 				else
-					return (std::make_pair(tmp, tmp));
+					return (ft::make_pair(tmp, tmp));
 			}
-			return (std::make_pair(tmp, prev));
+			return (ft::make_pair(tmp, prev));
 		}
 
 		node	*copy_node(node *n) {

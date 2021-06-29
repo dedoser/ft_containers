@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 15:10:07 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/29 18:25:07 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 00:55:57 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -391,7 +391,7 @@ namespace ft
 	template <class T, class Alloc>
 		bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
 			return (lhs.size() == rhs.size()
-					&& std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+					&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 		}
 	template <class T, class Alloc>
 		bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
@@ -399,22 +399,22 @@ namespace ft
 		}
 	template <class T, class Alloc>
 		bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-			return (std::lexicographical_compare(lhs.begin(), lhs.end(),
+			return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
 												 rhs.begin(), rhs.end()));
 		}
 	template <class T, class Alloc>
 		bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-			return (!std::lexicographical_compare(rhs.begin(), rhs.end(),
+			return (!ft::lexicographical_compare(rhs.begin(), rhs.end(),
 												  lhs.begin(), lhs.end()));
 		}
 	template <class T, class Alloc>
 		bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-			return (std::lexicographical_compare(rhs.begin(), rhs.end(),
+			return (ft::lexicographical_compare(rhs.begin(), rhs.end(),
 												  lhs.begin(), lhs.end()));
 		}
 	template <class T, class Alloc>
 		bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-			return (!std::lexicographical_compare(lhs.begin(), lhs.end(),
+			return (!ft::lexicographical_compare(lhs.begin(), lhs.end(),
 												 rhs.begin(), rhs.end()));
 		}
 	template <class T, class Alloc>

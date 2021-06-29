@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 16:09:52 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/24 16:10:56 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 01:11:09 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,11 @@ void	check_erase() {
 	ns::list<int>	m(10, 0);
 	for (int i = 0; i < 10; ++i)
 		m.push_back(i + 1);
-	for (iterator it = m.begin(); it != m.end(); ++it) {
-		std::cout << *m.erase(it);
+	size_t	size = m.size();
+	std::cout << m.size() << ' ';
+	for (size_t i = 0; i < size; ++i) {
+		iterator	it = m.begin();
+		std::cout << *m.erase(it) << ' ';
 	}
 	for (int i = 0; i < 10; ++i)
 		m.push_front(i + 1);

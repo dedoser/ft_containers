@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 17:14:18 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/25 21:50:51 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/29 17:44:41 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,10 @@ namespace ft {
 		}
 
 		BiIterator	operator--() {
-			if (isNULL(_ptr))
-				return (_ptr->parent);
+			if (isNULL(_ptr)) {
+				_ptr = _ptr->parent;
+				return (_ptr);
+			}
 			if (isNIL(_ptr->left) && _ptr->left->revParent != NULL) {
 				_ptr = _ptr->left;
 				return (_ptr->left);

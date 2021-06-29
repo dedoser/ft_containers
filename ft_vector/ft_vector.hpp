@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 15:10:07 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/16 17:38:59 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/29 18:25:07 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include "ft_vector_random_iterator.hpp"
 #include "../ft_ReverseIterator.hpp"
 #include "../ft_utils.hpp"
+#include <iostream>
 
 namespace ft
 {
@@ -80,7 +81,7 @@ namespace ft
 			}
 		}
 		vector(const vector &obj) 
-		: _ptr(NULL), _size(obj._size), _alloc_size(obj._alloc_size), _allocator(obj._alloc_size) {
+		: _ptr(NULL), _size(obj._size), _alloc_size(obj._alloc_size), _allocator(obj._allocator) {
 			try {
 				_ptr = _allocator.allocate(_alloc_size);
 			}
@@ -156,20 +157,20 @@ namespace ft
 			return (_allocator.max_size());
 		}
 		void		resize(size_type n, value_type val = value_type()) {
-			if (n < _size) {
+			if (n <= _size) {
 				for (size_type i = n; i < _size; ++i)
 					_allocator.destroy(_ptr + i);
 				
 				_size = n;
 				return ;
 			}
-			if (n <= _alloc_size) {
-				for (size_type i = n; i < _alloc_size; ++i)
+			else if (n <= _alloc_size) {
+				for (size_type i = _size; i < n; ++i)
 					_allocator.construct(_ptr + i, val);
 				_size = n;
 				return ;
 			}
-			if (n > _alloc_size) {
+			else if (n > _alloc_size) {
 				pointer	tmp;
 				try {
 					tmp = _allocator.allocate(n);
@@ -181,7 +182,8 @@ namespace ft
 				std::memmove(tmp, _ptr, _size * sizeof(value_type));
 				for (size_type i = _size; i < n; ++i)
 					_allocator.construct(tmp + i, val);
-				_allocator.deallocate(_ptr, _alloc_size);
+				if (_ptr != NULL)
+					_allocator.deallocate(_ptr, _alloc_size);
 				_size = n;
 				_alloc_size = n;
 				_ptr = tmp;
@@ -204,7 +206,8 @@ namespace ft
 					throw std::length_error("Wrong size");
 				}
 				std::memmove(tmp, _ptr, sizeof(value_type) * _size);
-				_allocator.deallocate(_ptr, _alloc_size);
+				if (_ptr != NULL)
+					_allocator.deallocate(_ptr, _alloc_size);
 				_alloc_size = n;
 				_ptr = tmp;
 			}
@@ -288,7 +291,11 @@ namespace ft
 			_size = n;
 		}
 		void	push_back(const value_type &val) {
-			this->insert(this->end(), val);
+			if (_size >= _alloc_size) {
+				this->reserve(_alloc_size * 2 + (_alloc_size == 0));
+			}
+			_allocator.construct(this->end().getPointer(), val);
+			_size++;
 		}
 		void	pop_back() {
 			if (_size == 0)
@@ -308,7 +315,7 @@ namespace ft
 			if ((size_type)dist > _size)
 				return ;
 			if (_size + n >= _alloc_size)
-				this->reserve(_size + 2 * n);
+				this->reserve(_size + n);
 
 			iterator	res = this->begin();
 			position = res + dist;
@@ -328,7 +335,7 @@ namespace ft
 				if ((size_type)dist > _size)
 					return ;
 				if (_size + amountVal >= _alloc_size)
-					this->reserve(_size + 2 * amountVal);
+					this->reserve(_size * 2 + amountVal);
 				iterator	res = this->begin();
 				position = res + dist;
 				unsigned	i = 0;

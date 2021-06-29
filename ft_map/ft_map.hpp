@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/26 16:53:32 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/29 22:28:43 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ namespace ft {
 		_root(NULL), _end_node(0), _beg_node(0), _size(0), _allocator(alloc), _comp(comp) {
 			NIL = create_NIL();
 			revNIL = create_NIL();
+			init_NIL();
 			_root = NIL;
 			init_border_nodes();
 		}
@@ -84,6 +85,7 @@ namespace ft {
 		_size(x._size), _allocator(x._allocator), _comp(x._comp) {
 			NIL = create_NIL();
 			revNIL = create_NIL();
+			init_NIL();
 			_root = copy_tree(x._root, NIL);
 			this->init_border_nodes();
 		}
@@ -101,7 +103,11 @@ namespace ft {
 			this->~map();
 			this->NIL = create_NIL();
 			this->revNIL = create_NIL();
-			_root = copy_tree(right._root, NIL);
+			init_NIL();
+			if (right._size == 0)
+				_root = NIL;
+			else
+				_root = copy_tree(right._root, NIL);
 			init_border_nodes();
 			_size = right._size;
 			_allocator = right._allocator;
@@ -235,6 +241,12 @@ namespace ft {
 			ft::swap(_allocator, x._allocator);
 			ft::swap(_comp, x._comp);
 			ft::swap(NIL, x.NIL);
+			ft::swap(revNIL, x.revNIL);
+			init_leaf(_root);
+			init_leaf(x._root);
+			init_border_nodes();
+			x.init_border_nodes();
+			
 		}
 
 		void	clear() {
@@ -246,7 +258,7 @@ namespace ft {
 		}
 
 		value_compare	value_comp() const {
-			return (value_compare(_comp));
+			return (_comp);
 		}
 
 		iterator	find(const key_type &k) {
@@ -318,11 +330,17 @@ namespace ft {
 		}
 
 		std::pair<const_iterator,const_iterator>	equal_range (const key_type& k) const {
+			if (this->lower_bound(k) == this->end() && this->upper_bound(k) == this->end())
+				return (std::make_pair<const_iterator, const_iterator>
+					(this->begin(), this->begin()));
 			return (std::make_pair<const_iterator, const_iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
 
 		std::pair<iterator,iterator>	equal_range (const key_type& k) {
+			if (this->lower_bound(k) == this->end() && this->upper_bound(k) == this->end())
+				return (std::make_pair<iterator, iterator>
+					(this->begin(), this->begin()));
 			return (std::make_pair<iterator, iterator>
 					(this->lower_bound(k), this->upper_bound(k)));
 		}
@@ -410,11 +428,13 @@ namespace ft {
 			init_border_nodes();
 		}
 
-		void	init_leaf(node *n, node *new_elem) {
-			if (value_comp()(n->value, new_elem->value))
-				n->right = new_elem;
-			else
-				n->left = new_elem;
+		void	init_leaf(node *root) {
+			if (isNIL(root->left))
+				root->left = NIL;
+			init_leaf(root->left);
+			if (isNIL(root->right))
+				root->right = NIL;
+			init_leaf(root->right);
 		}
 
 		std::pair<node *, node *>	find_node(const key_type &key) const {

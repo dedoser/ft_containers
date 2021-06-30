@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 	
 	for (int i = 0; i < COUNT; ++i)
 	{
-		map_int.insert(std::make_pair(rand(), rand()));
+		map_int.insert(ft::make_pair(rand(), rand()));
 	}
 
 	int sum = 0;

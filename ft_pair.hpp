@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/30 00:38:42 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/30 00:49:22 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 16:14:38 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ namespace ft {
 		pair(const first_type &a, const second_type &b) : first(a), second(b) {}
 
 		pair	*operator=(const pair &pr) {
+			if (this == &pr)
+				return (*this);
 			first = pr.first;
 			second = pr.second;
 		}

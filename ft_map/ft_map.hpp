@@ -6,7 +6,7 @@
 /*   By: fignigno <fignigno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 15:43:27 by fignigno          #+#    #+#             */
-/*   Updated: 2021/06/30 00:50:41 by fignigno         ###   ########.fr       */
+/*   Updated: 2021/06/30 15:57:04 by fignigno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,6 +174,7 @@ namespace ft {
 				(*((this->insert(ft::make_pair(k, mapped_type()))).first)).second
 			);
 		}
+
 		ft::pair<iterator, bool>	insert(const value_type &val) {
 			node	*parent, *x;
 
